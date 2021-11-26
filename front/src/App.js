@@ -35,7 +35,6 @@ function App() {
           <Route path="/explore-rooms" element={<ExploreRooms />} />
           <Route path="/create-room" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
-
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </div>
