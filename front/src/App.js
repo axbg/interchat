@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import { Speech } from './components/Speech/Speech'
 import Button from '@mui/material/Button';
 
