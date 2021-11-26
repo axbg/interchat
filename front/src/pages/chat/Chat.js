@@ -11,10 +11,11 @@ import { Speech } from "../../components/Speech/Speech";
 import Stack from "@mui/material/Stack";
 import _ from 'lodash';
 
-const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY;
+const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY || '';
 export const Chat = () => {
   const [messages, setMessages] = useState([
     { text: "Hello!", belongsToCurrentUser: false, isAudio: false },
+    { text: "My mother told me!", belongsToCurrentUser: false, isAudio: false },
   ]);
   const [message, setMessage] = useState("");
 
@@ -95,7 +96,7 @@ export const Chat = () => {
         Accept: "application/json"
       }
     }).then(res => res.json())
-      .then(response => response.data.translations[0].translatedText)
+      .then(response => _.get(response, 'data.translations[0].translatedText', text));
   }
 
   //not final
@@ -110,11 +111,11 @@ export const Chat = () => {
         return msg;
       }
     })
-    console.log(translatedMessages)
     return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
     // setMessages(translatedMessages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
   return (
     <div className="chat">
       <Stack className="header">
