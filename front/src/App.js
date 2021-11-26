@@ -15,7 +15,13 @@ function App() {
     palette: {
       mode: 'dark',
       primary: {
-        main: '#F8725A'
+        main: '#F8725A',
+      },
+      secondary: {
+        main: '#3DC9D8'
+      },
+      tertiary: {
+        main: '#FFFFFF'
       }
     },
   });

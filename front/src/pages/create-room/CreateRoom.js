@@ -11,10 +11,15 @@ import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import Link from '@mui/material/Link';
+
 import './CreateRoom.scss';
 
 export const CreateRoom = () => {
     const [room, setRoom] = useState({});
+    const [open, setOpen] = useState(false);
 
     const handleChange = (event) => {
         setRoom((prev) => {
@@ -27,7 +32,16 @@ export const CreateRoom = () => {
 
     const createRoom = () => {
         console.log(room);
+        handleClickOpen()
     }
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (value) => {
+        setOpen(false);
+    };
 
     const tags = [{ title: '#romanianMusic', year: 1994 },
     { title: '#bucharest', year: 1972 },
@@ -76,8 +90,41 @@ export const CreateRoom = () => {
                         <Button variant="contained" onClick={createRoom}>Create room</Button>
                     </Box>
                 </div>
+                <ConfirmationDialog open={open} onClose={handleClose} />
 
             </Container>
         </Box>
     )
+}
+
+function ConfirmationDialog(props) {
+    const { onClose, open } = props;
+    const code = "CDC3ce44"
+
+    const handleClose = () => {
+        onClose();
+    };
+
+    const handleCopyClick = (v) => {
+        navigator.clipboard.writeText(v);
+
+    };
+
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <DialogTitle >You created a room! </DialogTitle>
+            <Typography className="content" variant="subtitle1" component="div">
+                Share this code with your friends to join! {code}
+            </Typography>
+
+            <Box className="action-buttons">
+                <Button color="tertiary" variant="text" onClick={() => handleClose()}>
+                    cancel
+                </Button>
+                <Button component={Link} to="/chat" variant="contained" onClick={() => handleCopyClick(code)}>
+                    Copy Code and enter room
+                </Button>
+            </Box>
+        </Dialog>
+    );
 }
