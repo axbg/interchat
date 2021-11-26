@@ -18,15 +18,7 @@ export const CustomCard = ({ user = 'SDFBDSDS' }) => {
                 <Typography sx={{ fontSize: 14 }} color="text.secondary" align="center" gutterBottom>
                     Topics discussed
                 </Typography>
-                {/* <Grid container columnSpacing={{ xs: 8, sm: 8, md: 8 }}>
-                        <Grid item xs={2}>
-                            <Chip label="#visitBucharest" variant="outlined" size="small" />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <Chip label="#visitBucharest" variant="outlined" size="small" />
-                        </Grid>
 
-                    </Grid> */}
                 <Grid container spacing={{ xs: 1, md: 1 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                     {Array.from(Array(5)).map((_, index) => (
                         <Grid item xs={2} sm={4} md={4} key={index}>
