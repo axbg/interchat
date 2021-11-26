@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { IconButton, Input, Grid, Chip } from "@mui/material";
+import { IconButton, Input, Grid, Chip, Typography } from "@mui/material";
 import { MessageBox } from "react-chat-elements";
 import ScrollToBottom from "react-scroll-to-bottom";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import GroupsIcon from "@mui/icons-material/Groups";
+import MicIcon from "@mui/icons-material/Mic";
+import BlockIcon from '@mui/icons-material/Block';
 import "./Chat.scss";
 import { Speech } from "../../components/Speech/Speech";
 import Stack from "@mui/material/Stack";
@@ -35,6 +37,36 @@ export const Chat = () => {
       { text: receivedMessage, belongsToCurrentUser: true, isAudio: true },
     ]);
   };
+  const users = [
+    {
+      key: 1,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 2,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 3,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 4,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 5,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 6,
+      name: "Lorena Bodea",
+    },
+    {
+      key: 7,
+      name: "Lorena Bodea",
+    },
+  ];
 
   const playMessage = (message) => {
     var msg = new SpeechSynthesisUtterance();
@@ -51,8 +83,14 @@ export const Chat = () => {
 
   return (
     <div className="chat">
-      <Stack className="header" >
-        <Grid container display="flex" alignItems="center" spacing={{ xs: 5 }} pl={4}>
+      <Stack className="header">
+        <Grid
+          container
+          display="flex"
+          alignItems="center"
+          spacing={{ xs: 5 }}
+          pl={4}
+        >
           <Grid item xs={1}>
             <GroupsIcon />
           </Grid>
@@ -66,48 +104,63 @@ export const Chat = () => {
           ))}
         </Grid>
       </Stack>
-      <ScrollToBottom debug={false}>
-        {messages.map((message) => {
-          if (!message.isAudio) {
-            return (
-              <MessageBox
-                notch={false}
-                position={message.belongsToCurrentUser ? "right" : "left"}
-                type={"text"}
-                text={message.text}
-                avatar={"https://avatars.dicebear.com/api/avataaars/2.svg"}
-              />
-            );
-          } else {
-            return (
-              <div className="rce-container-mbox">
-                <div
-                  className={`rce-mbox rce-mbox-${
-                    message.belongsToCurrentUser ? "right" : "left"
-                  } rce-mbox--clear-notch`}
-                >
-                  <div className="rce-mbox-body">
-                    <div className="rce-mbox-title rce-mbox-title--clear">
-                      <div className="rce-avatar-container default default">
-                        <img
-                          alt=""
-                          src="https://avatars.dicebear.com/api/avataaars/2.svg"
-                          className="rce-avatar"
-                        />
+      <Stack direction="row">
+        <ScrollToBottom className="participants">
+          {users.map((user) => (
+            <Stack direction="row" spacing={2}>
+              <Typography pb={2} sx={{ fontSize: 18 }}>{user.name}</Typography>
+              <Grid item xs={1}>
+                <MicIcon />
+              </Grid>
+              <Grid item xs={1}>
+                <BlockIcon />
+              </Grid>
+            </Stack>
+          ))}
+        </ScrollToBottom>
+        <ScrollToBottom debug={false}>
+          {messages.map((message) => {
+            if (!message.isAudio) {
+              return (
+                <MessageBox
+                  notch={false}
+                  position={message.belongsToCurrentUser ? "right" : "left"}
+                  type={"text"}
+                  text={message.text}
+                  avatar={"https://avatars.dicebear.com/api/avataaars/2.svg"}
+                />
+              );
+            } else {
+              return (
+                <div className="rce-container-mbox">
+                  <div
+                    className={`rce-mbox rce-mbox-${
+                      message.belongsToCurrentUser ? "right" : "left"
+                    } rce-mbox--clear-notch`}
+                  >
+                    <div className="rce-mbox-body">
+                      <div className="rce-mbox-title rce-mbox-title--clear">
+                        <div className="rce-avatar-container default default">
+                          <img
+                            alt=""
+                            src="https://avatars.dicebear.com/api/avataaars/2.svg"
+                            className="rce-avatar"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="rce-mbox-text right">
-                      <IconButton onClick={() => playMessage(message.text)}>
-                        <PlayCircleIcon />
-                      </IconButton>
+                      <div className="rce-mbox-text right">
+                        <IconButton onClick={() => playMessage(message.text)}>
+                          <PlayCircleIcon />
+                        </IconButton>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          }
-        })}
-      </ScrollToBottom>
+              );
+            }
+          })}
+        </ScrollToBottom>
+      </Stack>
       <div className="input-section">
         <Input
           onKeyDown={(event) => handleKeyDown(event)}
