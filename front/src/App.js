@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.scss';
+import 'react-chat-elements/dist/main.css';
 
 import { ExploreRooms } from './pages/explore-rooms/ExploreRooms';
 import { CreateRoom } from './pages/create-room/CreateRoom';
