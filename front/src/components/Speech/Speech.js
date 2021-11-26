@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import {IconButton} from '@mui/material';
+import MicIcon from '@mui/icons-material/Mic';
 
-export const Speech = () => {
+export const Speech = (props) => {
     const [listening, setListening] = useState(false);
     const [recognition, setRecognition] = useState();
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -35,6 +38,7 @@ export const Speech = () => {
             recognition.stop()
             recognition.onend = () => {
                 console.log("Stopped listening per click")
+                props.onSpeechListened(finalTranscript);
             }
         }
 
@@ -52,8 +56,9 @@ export const Speech = () => {
                 else interimTranscript += transcript;
             }
             //nono
-            document.getElementById('interim').innerHTML = interimTranscript
-            document.getElementById('final').innerHTML = finalTranscript
+            // document.getElementById('interim').innerHTML = interimTranscript
+            // document.getElementById('final').innerHTML = finalTranscript
+            console.log(finalTranscript);
 
             //-------------------------COMMANDS------------------------------------
 
@@ -66,7 +71,9 @@ export const Speech = () => {
                 recognition.onend = () => {
                     console.log('Stopped listening per command')
                     const finalText = transcriptArr.slice(0, -3).join(' ')
-                    document.getElementById('final').innerHTML = finalText
+                    // document.getElementById('final').innerHTML = finalText
+                    console.log(finalText);
+                    setMessage(finalText);
                 }
             }
         }
@@ -77,11 +84,9 @@ export const Speech = () => {
     }, [listening]);
 
     return (
-        <div style={container}>
-            <button id='microphone-btn' style={button} onClick={toggleListen} />
-            <div id='interim' style={interim}></div>
-            <div id='final' style={final}></div>
-        </div>
+        <IconButton onClick={toggleListen}>
+                <MicIcon />
+            </IconButton>
     );
 }
 
