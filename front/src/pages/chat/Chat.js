@@ -84,7 +84,6 @@ export const Chat = () => {
   };
 
   const getTranslatedText = async (text, fromLang, toLang) => {
-    console.log(API_KEY)
     let url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
     url += '&q=' + encodeURI(text);
     url += `&source=${fromLang}`;
