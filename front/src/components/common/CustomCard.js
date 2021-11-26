@@ -1,40 +1,46 @@
 import React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
 
-export const CustomCard = () => {
-    const bull = (
-        <Box
-            component="span"
-            sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-        >
-            •
-        </Box>
-    );
+import "./CustomCard.scss";
+export const CustomCard = ({ user = 'SDFBDSDS' }) => {
     return (
-        <Card>
+        <Card >
             <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    Word of the Day
+                <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
+                    {`Created by ${user}`}
                 </Typography>
-                <Typography variant="h5" component="div">
-                    be{bull}nev{bull}o{bull}lent
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" align="center" gutterBottom>
+                    Topics discussed
                 </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
-                </Typography>
-                <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                </Typography>
+                {/* <Grid container columnSpacing={{ xs: 8, sm: 8, md: 8 }}>
+                        <Grid item xs={2}>
+                            <Chip label="#visitBucharest" variant="outlined" size="small" />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Chip label="#visitBucharest" variant="outlined" size="small" />
+                        </Grid>
+
+                    </Grid> */}
+                <Grid container spacing={{ xs: 1, md: 1 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {Array.from(Array(5)).map((_, index) => (
+                        <Grid item xs={2} sm={4} md={4} key={index}>
+                            <Chip label="#visitBucharest" variant="outlined" size="small" />
+                        </Grid>
+                    ))}
+                </Grid>
+
+
             </CardContent>
             <CardActions>
-                <Button size="small">Learn More</Button>
+                <div className="join-room">
+                    <Button variant="contained" >Join room</Button>
+                </div>
             </CardActions>
         </Card>
     )
