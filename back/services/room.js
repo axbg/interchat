@@ -66,7 +66,7 @@ const joinRoom = async (userId, data) => {
     await user.addRoom(room, { through: { active: true, admin: false, ban: false } });
   }
 
-  return await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['tag'], through: { attributes: ['admin', 'active', 'ban'] } }] });
+  return await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['id', 'tag'], through: { attributes: ['admin', 'active', 'ban'] } }] });
 }
 
 const leaveRoom = async (userId, data) => {
