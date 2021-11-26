@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { ExploreRooms } from './pages/explore-rooms/ExploreRooms';
 import { CreateRoom } from './pages/create-room/CreateRoom';
+import { JoinRoom } from './pages/join-room/JoinRoom';
 import { Chat } from './pages/chat/Chat';
 import { Routes, Route } from "react-router-dom";
 
@@ -14,7 +15,7 @@ function App() {
     palette: {
       mode: 'dark',
       primary: {
-        main:'#F8725A'
+        main: '#F8725A'
       }
     },
   });
@@ -22,14 +23,16 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<ExploreRooms />} />
-        <Route path="/explore-rooms" element={<ExploreRooms />} />
-        <Route path="/create-room" element={<CreateRoom />} />
-        <Route path="/chat" element={<Chat />} />
-      </Routes>
-    </div>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<ExploreRooms />} />
+          <Route path="/explore-rooms" element={<ExploreRooms />} />
+          <Route path="/create-room" element={<CreateRoom />} />
+          <Route path="/join-room" element={<JoinRoom />} />
+
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 }
