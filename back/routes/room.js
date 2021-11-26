@@ -10,6 +10,7 @@ router.put('/', controller.editRoom);
 router.delete('/', controller.removeRoom);
 
 router.post('/join', controller.joinRoom);
+router.get('/messages', controller.getLastMessages);
 router.post('/leave', controller.leaveRoom);
 
 module.exports = router;

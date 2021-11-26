@@ -1,5 +1,5 @@
 const service = require('../services').room;
-const properties = require('../properties');
+const messageService = require('../services').message;
 
 const respondWith = require('../services').utils.respondWith;
 
@@ -21,11 +21,14 @@ const editRoom = async (ctx) => {
 
 const removeRoom = async (ctx) => {
   return respondWith(ctx, 200, await service.removeRoom(ctx.session.passport.user, ctx.request.body));
-  
 }
 
 const joinRoom = async (ctx) => {
   return respondWith(ctx, 200, await service.joinRoom(ctx.session.passport.user, ctx.request.body));
+}
+
+const getLastMessages = async (ctx) => {
+  return respondWith(ctx, 200, await messageService.getLastMessages(ctx.session.passport.user, ctx.request.query));
 }
 
 const leaveRoom = async (ctx) => {
@@ -39,5 +42,6 @@ module.exports = {
   editRoom,
   removeRoom,
   joinRoom,
+  getLastMessages,
   leaveRoom
 };

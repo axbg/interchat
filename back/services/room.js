@@ -6,6 +6,7 @@ const curateInstance = require('./utils').curateInstance;
 const Op = require('sequelize').Op;
 
 const userService = require('./user');
+const messageService = require('./message');
 
 const getRoomById = async (id) => {
   return await RoomModel.findOne({ where: { id: id } })
@@ -56,22 +57,24 @@ const removeRoom = async (userId, data) => {
 
 const joinRoom = async (userId, data) => {
   const user = await userService.getUserById(userId);
-  const rooms = await user.getRooms({ where: { id: data.id}});
+  const rooms = await user.getRooms({ where: { id: data.id } });
   const allocatedRoom = rooms[0];
 
-  if(allocatedRoom) {
+  if (allocatedRoom) {
     await user.addRoom(allocatedRoom, { through: { active: true } });
   } else {
-    const room = await RoomModel.findOne({ where: { id: data.id }});
+    const room = await RoomModel.findOne({ where: { id: data.id } });
     await user.addRoom(room, { through: { active: true, admin: false, ban: false } });
   }
 
-  return await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['id', 'tag'], through: { attributes: ['admin', 'active', 'ban'] } }] });
+  const roomDetails = await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['id', 'tag'], through: { attributes: ['admin', 'active', 'ban'] } }] });
+  const lastMessages = await messageService.getLastMessages(userId, { roomId: data.id, limit: 5, skip: 0 });
+  return { roomDetails: roomDetails, messages: lastMessages };
 }
 
 const leaveRoom = async (userId, data) => {
   const user = await userService.getUserById(userId);
-  const room = await RoomModel.findOne({ where: { id: data.id }});
+  const room = await RoomModel.findOne({ where: { id: data.id } });
   return await user.removeRoom(room);
 }
 
@@ -84,10 +87,10 @@ const banUser = async (userId, data) => {
   }
 
   const bannedUser = await userService.getUserByTag(data.userTag);
-  const rooms = await bannedUser.getRooms({ where: { id: data.roomId}});
+  const rooms = await bannedUser.getRooms({ where: { id: data.roomId } });
   const allocatedRoom = rooms[0];
 
-  if(allocatedRoom) {
+  if (allocatedRoom) {
     await bannedUser.addRoom(allocatedRoom, { through: { active: false, ban: true } });
   }
 

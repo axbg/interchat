@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const uuid = require('uuid');
 
 module.exports = (sequelize) => {
-const User = sequelize.define('User', {
+const Message = sequelize.define('Message', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -10,26 +10,15 @@ const User = sequelize.define('User', {
       return uuid.v4();
     }
   },
-  secret: {
-    type: DataTypes.UUID,
-    primaryKey: true,
-    defaultValue: () => {
-      return uuid.v4();
-    }
-  },
-  tag: {
+  message: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  input_lang: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  output_lang: {
-    type: DataTypes.STRING,
-    allowNull: false
+  audio: {
+    type: DataTypes.BOOLEAN,
+    default: false
   }
 });
 
-return User;
+return Message;
 };
