@@ -52,7 +52,7 @@ export const CreateRoom = () => {
     ];
 
     return (
-        <Box m={5}>
+        <Box m={40}>
             <Container>
                 <div className='form'>
                     <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
