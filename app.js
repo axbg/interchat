@@ -11,6 +11,7 @@ const passport = require('./configurations/security');
 const middleware = require('./middlewares');
 const router = require('./routes');
 const connectDatabase = require('./models').connect;
+const bindWebSocket = require('./socket').bindWebSocket;
 
 const app = new Koa();
 
@@ -25,26 +26,12 @@ app.use(bodyParser());
 
 app.use(middleware.error.globalErrorHandler);
 
+connectDatabase();
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-connectDatabase();
-
-app.use(require('koa-static')(__dirname, {}));
-
-const IO = require('koa-socket-2');
-const io = new IO();
-io.attach(app);
-
-io.on('connection', (socket, data) => {
-  console.log('socket initialization completed');
-  socket.emit("hello", "world");
-});
-
-io.on('message', (ctx, data) => {
-  console.log(ctx.socket.id);
-  ctx.socket.broadcast.emit("response", "event")
-});
+bindWebSocket(app);
 
 app.listen(properties.PORT, () => {
   console.log('koa starter - running on http://localhost:' + properties.PORT);
