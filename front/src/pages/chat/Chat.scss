@@ -1,5 +1,10 @@
+.chat {
+  height: 100%;
+  width: 100%;
+}
+
 .rce-mbox {
-  color: black;
+  color: #1e1e1e;
 }
 
 .input-section {
@@ -10,4 +15,21 @@
 
 .typing-input {
   width: 50%;
+}
+
+.rce-mbox-time {
+  display: none;
+}
+
+svg[data-testid="PlayCircleIcon"] {
+  color: #f8725a;
+}
+
+.header {
+  background-color: #1e1e1e;
+}
+
+.rce-mbox {
+  background: #1e1e1e;
+  color: white;
 }
