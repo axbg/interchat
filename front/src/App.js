@@ -1,17 +1,45 @@
 import React from 'react';
-import './App.css';
-import { Speech } from './components/Speech/Speech'
-import Button from '@mui/material/Button';
+import './App.scss';
+import 'react-chat-elements/dist/main.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+import { ExploreRooms } from './pages/explore-rooms/ExploreRooms';
+import { CreateRoom } from './pages/create-room/CreateRoom';
+import { JoinRoom } from './pages/join-room/JoinRoom';
+import { Chat } from './pages/chat/Chat';
+import { Routes, Route } from "react-router-dom";
+import { LandingPage } from './pages/landing/LandingPage';
 
 function App() {
-
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#F8725A',
+      },
+      secondary: {
+        main: '#3DC9D8'
+      },
+      tertiary: {
+        main: '#FFFFFF'
+      }
+    },
+  });
 
   return (
-    <div className="App">
-      <Button variant="contained">Hello World</Button>
-      <Speech />
-
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/explore-rooms" element={<ExploreRooms />} />
+          <Route path="/create-room" element={<CreateRoom />} />
+          <Route path="/join-room" element={<JoinRoom />} />
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+      </div>
+    </ThemeProvider>
   );
 }
 

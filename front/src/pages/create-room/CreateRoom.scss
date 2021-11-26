@@ -1,0 +1,26 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+.tags-standard{ 
+    width: 50%;
+    gap: 30px;
+}
+
+.content {
+    padding: 0 24px 0 24px;
+}
+.action-buttons {
+    display: flex;
+    align-items: flex-end;
+    justify-content: end;
+    padding-top: 24px;
+    gap: 8px;
+    padding: 24px;
+}
+
+.button {
+    color: #3DC9D8;
+}
