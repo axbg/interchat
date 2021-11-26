@@ -47,7 +47,7 @@ export const CreateRoom = () => {
   ];
 
   return (
-    <Box mt={32}>
+    <Box pt={30}>
       <div className="form">
         <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
           You’re creating a room. Nice!

@@ -31,7 +31,7 @@ export const JoinRoom = () => {
   };
 
   return (
-    <Box mt={10}>
+    <Box pt={10}>
       <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
         You’re preparing to enter in room {code} created by {userCreator}
       </Typography>

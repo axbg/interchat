@@ -1,9 +1,13 @@
 import React from 'react';
-import {Card, CardContent, Typography, Grid, Chip, CardActions, Button, Container} from '@mui/material';
+import {Card, CardContent, Typography, Grid, CardActions, Button, Container} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import illustration from '../../assets/images/community.svg';
 
 export const LandingPage = () => {
+    let navigate = useNavigate();
     return(
-        <Container className='explore-rooms'>
+        <Container style={{paddingTop: '30px'}}>
+            <img alt="illustration" src={illustration} height="300" style={{paddingBottom: '30px'}}/>
             <Grid container rowSpacing={4} spacing={{ xs: 1, md: 3 }} columns={{ xs: 1, sm: 8, md: 12 }}>
                     <Grid item xs={1} sm={4} md={4}>
                         <Card >
@@ -14,7 +18,7 @@ export const LandingPage = () => {
                             </CardContent>
                             <CardActions>
                                 <div className="join-room">
-                                    <Button variant="contained" >Create room</Button>
+                                    <Button variant="contained" onClick={() => navigate("/create-room")}>Create room</Button>
                                 </div>
                             </CardActions>
                         </Card>
@@ -28,7 +32,7 @@ export const LandingPage = () => {
                             </CardContent>
                             <CardActions>
                                 <div className="join-room">
-                                    <Button variant="contained" to="/join-room">Join room</Button>
+                                    <Button variant="contained" onClick={() => navigate("/join-room")}>Join room</Button>
                                 </div>
                             </CardActions>
                         </Card>
@@ -42,7 +46,7 @@ export const LandingPage = () => {
                             </CardContent>
                             <CardActions>
                                 <div className="join-room">
-                                    <Button variant="contained" >Explore</Button>
+                                    <Button variant="contained" onClick={() => navigate("/explore-rooms")}>Explore</Button>
                                 </div>
                             </CardActions>
                         </Card>

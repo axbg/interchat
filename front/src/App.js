@@ -32,12 +32,11 @@ function App() {
       <CssBaseline />
       <div className="App">
         <Routes>
-          <Route path="/" element={<ExploreRooms />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/explore-rooms" element={<ExploreRooms />} />
           <Route path="/create-room" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </div>
     </ThemeProvider>

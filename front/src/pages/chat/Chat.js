@@ -153,35 +153,29 @@ export const Chat = () => {
             </Stack>
           ))}
         </ScrollToBottom>
-        <ScrollToBottom debug={false}>
-          {messages.map((message) => {
-            if (!message.isAudio) {
-              return (
-                <MessageBox
-                  notch={false}
-                  position={message.belongsToCurrentUser ? "right" : "left"}
-                  type={"text"}
-                  text={message.text}
-                  avatar={"https://avatars.dicebear.com/api/avataaars/2.svg"}
-                />
-              );
-            } else {
-              return (
-                <div className="rce-container-mbox">
-                  <div
-                    className={`rce-mbox rce-mbox-${message.belongsToCurrentUser ? "right" : "left"
-                      } rce-mbox--clear-notch`}
-                  >
-                    <div className="rce-mbox-body">
-                      <div className="rce-mbox-title rce-mbox-title--clear">
-                        <div className="rce-avatar-container default default">
-                          <img
-                            alt=""
-                            src="https://avatars.dicebear.com/api/avataaars/2.svg"
-                            className="rce-avatar"
-                          />
+        <ScrollToBottom className="messages" debug={false}>
+        {
+            messages.map(message => {
+                if(!message.isAudio) {
+                    return (
+                    <MessageBox
+                        notch={false}
+                        position={message.belongsToCurrentUser ? 'right' : 'left'}
+                        type={'text'}
+                        text={message.text}
+                        avatar={'https://avatars.dicebear.com/api/avataaars/2.svg'}
+                    />
+                    )
+                } else {
+                    return (
+                        <div className="rce-container-mbox">
+                        <div className={`rce-mbox rce-mbox-${message.belongsToCurrentUser ? 'right' : 'left'} rce-mbox--clear-notch`}>
+                        <div className="rce-mbox-body">
+                        <div className="rce-mbox-title rce-mbox-title--clear">
+                            <div className="rce-avatar-container default default">
+                                <img alt="" src="https://avatars.dicebear.com/api/avataaars/2.svg" className="rce-avatar"/>
+                            </div>
                         </div>
-                      </div>
                       <div className="rce-mbox-text right">
                         <IconButton onClick={() => playMessage(message.text)}>
                           <PlayCircleIcon />
@@ -194,6 +188,7 @@ export const Chat = () => {
             }
           })}
         </ScrollToBottom>
+
       </Stack>
       <div className="input-section">
         <Input
