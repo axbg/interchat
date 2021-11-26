@@ -12,6 +12,8 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.24.0",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.21",
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-chat-elements": "^10.16.0",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IconButton, Input, Grid, Chip, Typography } from "@mui/material";
 import { MessageBox } from "react-chat-elements";
 import ScrollToBottom from "react-scroll-to-bottom";
@@ -9,7 +9,9 @@ import BlockIcon from '@mui/icons-material/Block';
 import "./Chat.scss";
 import { Speech } from "../../components/Speech/Speech";
 import Stack from "@mui/material/Stack";
+import _ from 'lodash';
 
+const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY;
 export const Chat = () => {
   const [messages, setMessages] = useState([
     { text: "Hello!", belongsToCurrentUser: false, isAudio: false },
@@ -81,6 +83,39 @@ export const Chat = () => {
     speechSynthesis.speak(msg);
   };
 
+  const getTranslatedText = async (text, fromLang, toLang) => {
+    console.log(API_KEY)
+    let url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
+    url += '&q=' + encodeURI(text);
+    url += `&source=${fromLang}`;
+    url += `&target=${toLang}`;
+    return await fetch(url, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      }
+    }).then(res => res.json())
+      .then(response => response.data.translations[0].translatedText)
+  }
+
+  //not final
+  useEffect(() => {
+    if (_.isEmpty(messages)) {
+      return;
+    }
+    const translatedMessages = messages.map(async msg => {
+      if (!msg.belongsToCurrentUser) {
+        return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
+      } else {
+        return msg;
+      }
+    })
+    console.log(translatedMessages)
+    return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
+    // setMessages(translatedMessages)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <div className="chat">
       <Stack className="header">
@@ -134,9 +169,8 @@ export const Chat = () => {
               return (
                 <div className="rce-container-mbox">
                   <div
-                    className={`rce-mbox rce-mbox-${
-                      message.belongsToCurrentUser ? "right" : "left"
-                    } rce-mbox--clear-notch`}
+                    className={`rce-mbox rce-mbox-${message.belongsToCurrentUser ? "right" : "left"
+                      } rce-mbox--clear-notch`}
                   >
                     <div className="rce-mbox-body">
                       <div className="rce-mbox-title rce-mbox-title--clear">
