@@ -19,6 +19,11 @@ const Membership = sequelize.define('Membership', {
     type: DataTypes.BOOLEAN,
     default: false,
     allowNull: false
+  },
+  ban: {
+    type: DataTypes.BOOLEAN,
+    default: false,
+    allowNull: false
   }
 });
 

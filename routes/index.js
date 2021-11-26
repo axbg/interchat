@@ -1,8 +1,8 @@
 const Router = require('koa-router');
-const properties = require('../properties');
 const passport = require('../configurations/security');
 
 const userRouter = require('./user');
+const roomRouter = require('./room');
 
 const router = new Router({ prefix: '/api' });
 
@@ -12,6 +12,6 @@ router.get('/', (ctx) => {
 });
 
 router.use('/user', userRouter.routes());
-
+router.use('/room', passport.authenticate('jwt'), roomRouter.routes());
 
 module.exports = router;

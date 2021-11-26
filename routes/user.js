@@ -4,7 +4,8 @@ const passport = require('../configurations/security');
 
 const router = new Router();
 
-router.post('/login', controller.login);
-router.delete('/logout', passport.authenticate('jwt'), controller.logout);
+router.post('/', controller.login);
+router.put('/', passport.authenticate('jwt'), controller.updatePreferences);
+router.delete('/', passport.authenticate('jwt'), controller.logout);
 
 module.exports = router;

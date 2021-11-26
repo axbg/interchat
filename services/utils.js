@@ -3,6 +3,15 @@ const respondWith = (ctx, status, message) => {
     ctx.body = { "message": message }
 }
 
+const curateInstance = (instance) => {
+    delete instance.id;
+    delete instance.createdAt;
+    delete instance.updatedAt;
+
+    return instance;
+}
+
 module.exports = {
-    respondWith
+    respondWith,
+    curateInstance
 }

@@ -14,6 +14,14 @@ const Room = sequelize.define('Room', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   public: {
     type: DataTypes.BOOLEAN,
     allowNull: false
