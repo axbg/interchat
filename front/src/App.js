@@ -9,6 +9,7 @@ import { CreateRoom } from './pages/create-room/CreateRoom';
 import { JoinRoom } from './pages/join-room/JoinRoom';
 import { Chat } from './pages/chat/Chat';
 import { Routes, Route } from "react-router-dom";
+import { LandingPage } from './pages/landing/LandingPage';
 
 function App() {
   const darkTheme = createTheme({
@@ -36,6 +37,7 @@ function App() {
           <Route path="/create-room" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/landing" element={<LandingPage />} />
         </Routes>
       </div>
     </ThemeProvider>
