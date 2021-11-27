@@ -28,6 +28,11 @@ const createRoom = async (userId, data) => {
     throw new KoaError('One or more required fields are missing: name, description, tags, picture', 400);
   }
 
+  const existingRoom = await RoomModel.findOne({where: { name: data.name}});
+  if(existingRoom) {
+    throw new KoaError('A room with this name already exists!', 400);
+  }
+
   const room = await RoomModel.create(curateInstance(data));
   return await user.addRoom(room, { through: { admin: true, active: true, ban: false } });
 }
