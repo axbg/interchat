@@ -8,11 +8,15 @@ import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 
 import "./CustomCard.scss";
-export const CustomCard = ({ user = 'SDFBDSDS' }) => {
+export const CustomCard = ({ user = 'SDFBDSDS', ...props }) => {
+    console.log(props)
     return (
         <Card >
             <CardContent>
-                <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
+                <Typography sx={{ fontSize: 18 }} align="center" gutterBottom>
+                    {props?.room?.name}
+                </Typography>
+                <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
                     {`Created by ${user}`}
                 </Typography>
                 <Typography sx={{ fontSize: 14 }} color="text.secondary" align="center" gutterBottom>
@@ -20,9 +24,9 @@ export const CustomCard = ({ user = 'SDFBDSDS' }) => {
                 </Typography>
 
                 <Grid container spacing={{ xs: 1, md: 1 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                    {Array.from(Array(5)).map((_, index) => (
+                    {props?.room?.tags.map((item, index) => (
                         <Grid item xs={2} sm={4} md={4} key={index}>
-                            <Chip label="#visitBucharest" variant="outlined" size="small" />
+                            <Chip label={`#${item}`} variant="outlined" size="small" />
                         </Grid>
                     ))}
                 </Grid>
@@ -31,7 +35,7 @@ export const CustomCard = ({ user = 'SDFBDSDS' }) => {
             </CardContent>
             <CardActions>
                 <div className="join-room">
-                    <Button variant="contained" >Join room</Button>
+                    <Button variant="contained" onClick={() => props.onItemClick()}>Join room</Button>
                 </div>
             </CardActions>
         </Card>

@@ -12,7 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 import "./JoinRoom.scss";
 
-export const JoinRoom = () => {
+export const JoinRoom = (props) => {
+  console.log(props.location.state)
   const [userPref, setUserPref] = useState({});
   let navigate = useNavigate();
 
@@ -31,19 +32,21 @@ export const JoinRoom = () => {
   };
 
   return (
+
     <Box pt={10}>
+
       <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
         You’re preparing to enter in room {code} created by {userCreator}
       </Typography>
       <Stack direction="column" spacing={1} p={4}>
-      <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
-        Topics discussed
-      </Typography>
-      <Stack direction="row" spacing={1} justifyContent="center">
-        {topics.map((topic) => (
-          <Chip color="secondary" key={topic} label={topic} variant="outlined" />
-        ))}
-      </Stack>
+        <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
+          Topics discussed
+        </Typography>
+        <Stack direction="row" spacing={1} justifyContent="center">
+          {topics.map((topic) => (
+            <Chip color="secondary" key={topic} label={topic} variant="outlined" />
+          ))}
+        </Stack>
 
       </Stack>
       <Container>
@@ -86,7 +89,7 @@ export const JoinRoom = () => {
             </Box>
           </Box>
           <Box p={2}>
-            <Button  variant="contained" onClick={() => handleClick()}>
+            <Button variant="contained" onClick={() => handleClick()}>
               Join room
             </Button>
           </Box>

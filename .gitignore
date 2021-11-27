@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 front/.history
 links.txt
 front/src/.env
 front/.env
 node_modules
 .env
-=======
 .DS_STORE
->>>>>>> 2d5eeff (Added persistent messages)
+.history
