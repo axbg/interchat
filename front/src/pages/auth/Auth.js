@@ -16,13 +16,16 @@ export const Auth = () => {
     const login = () => {
         axios.post('http://localhost:8080/api/user', {
             "tag": name,
-            ...!isMember && { "secret": secret },
+            ...isMember && { "secret": secret },
         }).then(res => {
-            console.log(res)
-            //de afisat secret
             localStorage.setItem('token', res?.data?.message?.token);
             setSecret(res?.data?.message?.secret)
-            setOpen(true)
+
+            if (isMember) {
+                navigate('/landing')
+            } else {
+                setOpen(true)
+            }
         })
     }
 
