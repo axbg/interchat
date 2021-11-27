@@ -29,7 +29,18 @@ export const Chat = (props) => {
   const uuid = uuidv4();
   const { state } = useLocation();
   const token = localStorage.getItem('token');
-  console.log(state)
+
+  const getGoogleFormatCode = {
+    "ro-RO": 'ro',
+    "en-US": 'en',
+    "en-UK": 'en-GB',
+    "fr-FR": 'fr',
+    'it-IT': 'it',
+    'nl-NL': 'nl',
+    'sk-SK': 'sk',
+    'es-ES': 'es',
+    'de-DE': 'de'
+  };
 
   useEffect(() => {
     setUsers(state.connectedUsers);
@@ -52,8 +63,26 @@ export const Chat = (props) => {
       setUsers((prev) => [...prev, { id: data.id, tag: data.tag }]);
     })
     socket.on("b_new_message", (data) => {
-      console.log(data);
-      setMessages((prev) => [...prev, data])
+      console.log(data, state);
+      let fromLang = getGoogleFormatCode[data?.lang];
+      let toLang = getGoogleFormatCode[state.userPref.output_lang];
+      let url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
+      url += '&q=' + encodeURI(data.message);
+      url += `&source=${fromLang}`;
+      url += `&target=${toLang}`;
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        }
+      }).then(res => res.json())
+        .then(response => {
+          console.log(response)
+          const trsText = _.get(response, 'data.translations[0].translatedText');
+          const newData = { ...data, message: trsText }
+          setMessages((prev) => [...prev, newData])
+        });
     })
     socket.on("b_user_left", (data) => {
       console.log({ data, users })
@@ -61,33 +90,37 @@ export const Chat = (props) => {
     });
 
     socket.emit("user_joined", { jwt: token, token: uuid, roomId: state.room.id });
-
-    // return () => {
-    //   socket.emit("user_left");
-    // };
   }, [])
 
   const processMessage = () => {
-    setMessages([
-      ...messages,
-      { message: message, belongsToCurrentUser: true, audio: false },
-    ]);
-    socket.emit("new_message", { message: message, audio: false });
-    setMessage("");
+    console.log(message);
+    console.log(state)
+
+    let fromLang = getGoogleFormatCode[state.userPref.input_lang];
+    let toLang = getGoogleFormatCode[state.userPref.output_lang];
+    let url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
+    url += '&q=' + encodeURI(message);
+    url += `&source=${fromLang}`;
+    url += `&target=${toLang}`;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      }
+    }).then(res => res.json())
+      .then(response => {
+        const trsText = _.get(response, 'data.translations[0].translatedText');
+        setMessages([
+          ...messages,
+          { message: message, belongsToCurrentUser: true, audio: false },
+        ]);
+        socket.emit("new_message", { message: trsText, audio: false });
+        setMessage("");
+      });
+
   };
 
-  useEffect(() => {
-    console.log(state?.room)
-    // axios.get('http://localhost:8080/api/room/messages',
-    //   {
-    //     headers:
-    //       { "Authorization": `Bearer ${token}` },
-    //     params: { roomId: state.room.id, limit: 5, skip: 0 }
-    //   }).then(res => {
-    //     console.log(res);
-    //   })
-
-  }, [state?.room])
 
   const handleKeyDown = (event) => {
     if (event.keyCode === 13) {
@@ -116,38 +149,6 @@ export const Chat = (props) => {
     msg.lang = "ro-Ro";
     speechSynthesis.speak(msg);
   };
-
-  const getTranslatedText = async (text, fromLang, toLang) => {
-    let url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`;
-    url += '&q=' + encodeURI(text);
-    url += `&source=${fromLang}`;
-    url += `&target=${toLang}`;
-    return await fetch(url, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      }
-    }).then(res => res.json())
-      .then(response => _.get(response, 'data.translations[0].translatedText', text));
-  }
-
-  //not final
-  useEffect(() => {
-    if (_.isEmpty(messages)) {
-      return;
-    }
-    // const translatedMessages = messages.map(async msg => {
-    //   if (!msg.belongsToCurrentUser) {
-    //     return getTranslatedText(msg.message, 'en', 'ro').then(res => { return { ...msg, message: res } });
-    //   } else {
-    //     return msg;
-    //   }
-    // })
-    // return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
-    // setMessages(translatedMessages)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <div className="chat">
