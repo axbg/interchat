@@ -13,13 +13,13 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import { useNavigate } from 'react-router-dom';
-
+import axios from "axios";
 import "./CreateRoom.scss";
 
 export const CreateRoom = () => {
-  const [room, setRoom] = useState({});
+  const [room, setRoom] = useState({ public: false });
   const [open, setOpen] = useState(false);
-
+  const [createdInfo, setCreatedInfo] = useState({});
   const handleChange = (event) => {
     setRoom((prev) => {
       return {
@@ -30,7 +30,13 @@ export const CreateRoom = () => {
   };
 
   const handleClickOpen = () => {
-    setOpen(true);
+    axios.post('http://localhost:8080/api/room', room, {
+      headers: { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' }
+    }).then(res => {
+      console.log(res?.data?.message[0])
+      setCreatedInfo(res)
+      setOpen(true);
+    })
   };
 
   const handleClose = () => {
@@ -38,12 +44,12 @@ export const CreateRoom = () => {
   };
 
   const tags = [
-    { title: "#romanianMusic", year: 1994 },
-    { title: "#bucharest", year: 1972 },
-    { title: "#foodLover", year: 1974 },
-    { title: "#historicalBuildings", year: 2008 },
-    { title: "#romanianHabits", year: 1957 },
-    { title: "#speakRomanian", year: 1993 },
+    { title: "romanianMusic", year: 1994 },
+    { title: "bucharest", year: 1972 },
+    { title: "foodLover", year: 1974 },
+    { title: "historicalBuildings", year: 2008 },
+    { title: "romanianHabits", year: 1957 },
+    { title: "speakRomanian", year: 1993 },
   ];
 
   return (
@@ -58,7 +64,23 @@ export const CreateRoom = () => {
             id="component-simple"
             onChange={(e) =>
               setRoom((prev) => {
-                return { ...prev, chatName: e.target.value };
+                return { ...prev, name: e.target.value };
+              })
+            }
+          />
+        </FormControl>
+        <FormControl variant="standard" sx={{ width: 300 }}>
+
+          <TextField
+            id="standard-textarea"
+            label="Description"
+            placeholder="Learn now or never"
+            maxRows={2}
+            multiline
+            variant="standard"
+            onChange={(e) =>
+              setRoom((prev) => {
+                return { ...prev, description: e.target.value };
               })
             }
           />
@@ -68,8 +90,12 @@ export const CreateRoom = () => {
             multiple
             id="tags-standard"
             options={tags}
-            getOptionLabel={(option) => option.title}
-            defaultValue={[tags[0]]}
+            getOptionLabel={(option) => `#${option.title}`}
+            onChange={(event, value) => {
+              console.log(value)
+              const joinedValues = value.map(item => item.title).join('#');
+              setRoom((prev) => { return { ...prev, tags: joinedValues } })
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -86,19 +112,30 @@ export const CreateRoom = () => {
             <Switch
               color="primary"
               onChange={handleChange}
-              name="privateRoom"
+              name="public"
             />
           }
           label="Private Room"
           labelPlacement="start"
         />
+        <FormControl variant="standard" sx={{ width: 300 }}>
+          <InputLabel htmlFor="component-simple">Image link</InputLabel>
+          <Input
+            id="component-simple"
+            onChange={(e) =>
+              setRoom((prev) => {
+                return { ...prev, picture: e.target.value };
+              })
+            }
+          />
+        </FormControl>
         <Box p={2}>
           <Button variant="contained" onClick={handleClickOpen}>
             Create room
           </Button>
         </Box>
       </div>
-      <ConfirmationDialog open={open} onClose={handleClose} />
+      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} />
     </Box>
   );
 };
@@ -114,7 +151,8 @@ function ConfirmationDialog(props) {
 
   const handleClick = (v) => {
     navigator.clipboard.writeText(v);
-    navigate('/join-room')
+    console.log(props.createdInfo)
+    navigate('/join-room', { state: { createdInfo: props.createdInfo } })
   };
 
   return (
