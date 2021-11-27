@@ -48,7 +48,7 @@ export const Chat = (props) => {
     });
     socket.on("b_user_joined", (data) => {
       console.log('JOINED', { data, users })
-      setUsers((prev) => [...prev, { userId: data.id, tag: data.tag }]);
+      setUsers((prev) => [...prev, { id: data.id, tag: data.tag }]);
     })
     socket.on("b_new_message", (data) => {
       console.log(data);
@@ -56,9 +56,7 @@ export const Chat = (props) => {
     })
     socket.on("b_user_left", (data) => {
       console.log({ data, users })
-      const foundUsers = users.filter(user => user.userId !== data.userId);
-      console.log(foundUsers)
-      setUsers((prev) => { console.log(prev) });
+      setUsers((prev) => {console.log(prev); return prev.filter(user => user.id !== data.userId)});
     });
 
     socket.emit("user_joined", { jwt: token, token: uuid, roomId: state.room.id });
