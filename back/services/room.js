@@ -72,18 +72,18 @@ const joinRoom = async (userId, data) => {
     await user.addRoom(room, { through: { active: true, admin: false, ban: false } });
   }
 
-  const roomDetails = await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['id', 'tag'], through: { attributes: ['admin', 'active', 'ban'] } }] });
+  const roomDetails = await RoomModel.findAll({ where: { id: data.id }, include: [{ model: UserModel, attributes: ['id', 'tag'], through: { attributes: ['admin', 'active', 'ban'] , where:{ 'active':true}} }] });
   const lastMessages = await messageService.getLastMessages(userId, { roomId: data.id, limit: 5, skip: 0 });
   return { roomDetails: roomDetails, messages: lastMessages };
 }
 
-const disconnect = async (userId, data) => {
+const disconnect = async (userId, roomId) => {
   const user = await userService.getUserById(userId);
-  const rooms = await user.getRooms({ where: { id: data.id } });
+  const rooms = await user.getRooms({ where: { id: roomId } });
   const allocatedRoom = rooms[0];
 
   if (allocatedRoom) {
-    await user.addRoom(room, { through: { active: false } });
+    await user.addRoom(allocatedRoom, { through: { active: false } });
   }
 
   return true;
@@ -116,7 +116,7 @@ const banUser = async (userId, roomId, bannedUserId) => {
 
 const hasAccessToRoom = async (userId, roomId) => {
   const user = await userService.getUserById(userId);
-  const rooms = await user.getRooms({ where: { id: data.id } });
+  const rooms = await user.getRooms({ where: { id: roomId } });
   const allocatedRoom = rooms[0];
 
   return allocatedRoom ? true : false;
@@ -125,7 +125,7 @@ const hasAccessToRoom = async (userId, roomId) => {
 const isBanned = async (userId, roomId) => {
   const user = await userService.getUserById(userId);
 
-  const rooms = await user.getRooms({ where: { id: data.id } });
+  const rooms = await user.getRooms({ where: { id: roomId } });
   if (!rooms[0] || rooms[0].Membership.banned) {
     return true;
   }

@@ -12,10 +12,15 @@ const properties = require('./properties');
 const roomService = require('./services').room;
 const messageService = require('./services').message;
 const userService = require('./services').user;
+const jwt = require('jsonwebtoken');
 
-const parseInitialJwt = (jwt) => {
-    const decoded = jwt.verify(jwt, properties.JWT_SECRET);
-    return decoded.id;
+const parseInitialJwt = (token) => {
+    try {
+        const decoded = jwt.verify(token, properties.JWT_SECRET);
+        return decoded.id;
+    } catch (e) {
+        return null;
+    }
 };
 
 const bindWebSocket = (app) => {
@@ -28,31 +33,34 @@ const bindWebSocket = (app) => {
     io.on('user_joined', async (ctx, data) => {
         //extract data from jwt
         const userId = parseInitialJwt(data.jwt);
-        ctx.socket['userId'] = userId;
+        console.log(userId);
+        if(userId) {
+            ctx.socket['userId'] = userId;
 
-        //check that user has access to requested camera
-        const hasAccessToRoom = roomService.hasAccessToRoom(userId, data.roomId);
+            //check that user has access to requested camera
+            const hasAccessToRoom = roomService.hasAccessToRoom(userId, data.roomId);
 
-        if(hasAccessToRoom) {
-            ctx.socket['roomId'] = data.roomId;
-            
-            io.to(ctx.socket.id).emit("authentication", "ok");
-            
-            ctx.socket.join(data.roomId)
+            if(hasAccessToRoom) {
+                ctx.socket['roomId'] = data.roomId;
+                
+                io.to(ctx.socket.id).emit("authentication", "ok");
+                
+                ctx.socket.join(data.roomId)
 
-            const user = userService.getUserById(userId);
-            const userData = {'tag': user.tag, 'id': userId};
-            ctx.socket.broadcast.to(data.roomId).broadcast("b_user_joined", userData);
-        } else {
-            ctx.socket.to(data.token).emit("authentication", null);
+                const user = await userService.getUserById(userId);
+                const userData = {'tag': user.tag, 'id': userId};
+                ctx.socket.broadcast.to(data.roomId).emit("b_user_joined", userData);
+            } else {
+                ctx.socket.to(data.token).emit("authentication", null);
+            }
         }
     });
 
-    io.on('new_message', (ctx, data) => {
-        messageService.addMessage(ctx.socket['userId'], ctx.socket['roomId'], data.message, data.audio);
+    io.on('new_message', async (ctx, data) => {
+        await messageService.addMessage(ctx.socket['userId'], ctx.socket['roomId'], data.message, data.audio);
         
         // check to see if user is banned
-        const banned = roomService.isBanned(ctx.socket['userId'], ctx.socket['roomId']);
+        const banned = await roomService.isBanned(ctx.socket['userId'], ctx.socket['roomId']);
 
         if(!banned) {
             ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'] });
@@ -61,7 +69,7 @@ const bindWebSocket = (app) => {
 
     io.on('user_left', (ctx, data) => {
         roomService.disconnect(ctx.socket['userId'], ctx.socket['roomId']);
-        ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_user_left", { userId: ctx.socket['userId'] });
+        ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_user_left", { id: ctx.socket['userId'] });
     });
 
     io.on('ban', (ctx, data) => {

@@ -31,6 +31,10 @@ export const Chat = (props) => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    setUsers(state.connectedUsers);
+    setTags(state.currentTags.split('#'));
+    setRoomName(state.name);
+    console.log("socket", socket);
     socket.on("authentication", (data) => {
       if(data) {
         // auth succeeded everything good
@@ -43,21 +47,22 @@ export const Chat = (props) => {
         console.log(msg);
     });
     socket.on("b_user_joined", (data) => {
-      setUsers([...users, {userId: data.userId, tag: data.tag}])
+      setUsers((prev)=>[...prev, {userId: data.id, tag: data.tag}]);
     })
     socket.on("b_new_message", (data) => {
-      setMessages([...messages, data]);
+      console.log(data);
+      setMessages((prev)=>[...prev, data])
     })  
     socket.on("b_user_left", (data) => {
-      const remainingUsers = users.filter(user => user.userId !== data.userId);
-      setUsers(remainingUsers);
+      setUsers((prev)=> prev.filter(user => user.userId !== data.id));
     });
+
     socket.emit("user_joined", {jwt: token, token: uuid, roomId: state.room.id});
 
-    return () => {
-      socket.emit("user_left");
-    };
-  }, [socket, state.room.id, uuid])
+    // return () => {
+    //   socket.emit("user_left");
+    // };
+  }, [])
 
   const processMessage = () => {
     setMessages([
@@ -78,17 +83,7 @@ export const Chat = (props) => {
     //   }).then(res => {
     //     console.log(res);
     //   })
-    axios.post('http://localhost:8080/api/room/join', { id: state.room.id }, {
-      headers: { "Authorization": `Bearer ${token}` }
-    }).then(res => {
-      const connectedUsers = res.data.message.roomDetails[0].Users;
-      const currentTags = res.data.message.roomDetails[0].tags;
-      const name = res.data.message.roomDetails[0].name;
-      setUsers(connectedUsers);
-      setTags(currentTags.split('#'));
-      setRoomName(name);
-      console.log(res);
-    })
+
   }, [state?.room])
 
   const handleKeyDown = (event) => {
@@ -103,7 +98,7 @@ export const Chat = (props) => {
       ...messages,
       { message: receivedMessage, belongsToCurrentUser: true, audio: true },
     ]);
-    socket.emit("new_message", {message: message, audio: true});
+    socket.emit("new_message", {message: receivedMessage, audio: true});
   };
 
   const playMessage = (message) => {
@@ -167,14 +162,14 @@ export const Chat = (props) => {
           <Grid item xs={2}>
             Chat {roomName}
           </Grid>
-          {tags.map((topic) => (
+          {tags && tags.map((topic) => (
             <Chip color="secondary" key={topic} label={`#${topic}`} variant="outlined" />
           ))}
         </Grid>
       </Stack>
       <Stack direction="row">
         <ScrollToBottom className="participants">
-          {users.map((user) => (
+          {users && users.map((user) => (
             <Stack direction="row" spacing={2}>
               <Typography pb={2} sx={{ fontSize: 18 }}>{user.tag}</Typography>
               <Grid item xs={1}>

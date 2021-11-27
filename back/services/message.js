@@ -5,7 +5,7 @@ const userService = require('./user');
 
 const addMessage = async (userId, roomId, message, audio) => {
     const user = await userService.getUserById(userId);
-    const rooms = user.getRooms({ where: { id: roomId } });
+    const rooms = await user.getRooms({ where: { id: roomId } });
 
     if (!rooms[0]) {
         throw new KoaError('You are not member of this room', 403);

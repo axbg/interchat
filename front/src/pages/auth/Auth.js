@@ -10,13 +10,10 @@ export const Auth = () => {
     const [name, setName] = useState('');
 
     const login = () => {
-        axios.post('http://localhost:8080/api/login', {
+        axios.post('http://localhost:8080/api/user', {
             "tag": name,
-            "input_lang": "en-US",
-            "output_lang": "en-us",
-            "id": "8c4b162b-1404-4577-84a8-6b1ea13660c8"
         }).then(res => {
-            localStorage.setItem('token', res.data.message);
+            localStorage.setItem('token', res.data.message.token);
             navigate('/landing');
         }) 
     }

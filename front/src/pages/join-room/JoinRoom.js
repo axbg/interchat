@@ -38,7 +38,14 @@ export const JoinRoom = (props) => {
       axios.put('http://localhost:8080/api/user', userPref, {
         headers: { "Authorization": `Bearer ${token}` }
       }).then(() => {
-        navigate('/chat', { state: { room: state?.room } });
+        axios.post('http://localhost:8080/api/room/join', { id: state.room.id }, {
+          headers: { "Authorization": `Bearer ${token}` }
+        }).then(res => {
+          const connectedUsers = res.data.message.roomDetails[0].Users;
+          const currentTags = res.data.message.roomDetails[0].tags;
+          const name = res.data.message.roomDetails[0].name;
+          navigate('/chat', { state: { room: state?.room, connectedUsers, currentTags, name} });
+        })
       });
   };
 

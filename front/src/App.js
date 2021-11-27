@@ -32,7 +32,7 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      {/* <SocketProvider> */}
+      <SocketProvider>
       <div className="App">
         <Routes>
           <Route path="/" element={<Auth />} />
@@ -43,7 +43,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </div>
-      {/* </SocketProvider> */}
+      </SocketProvider>
     </ThemeProvider>
   );
 }
