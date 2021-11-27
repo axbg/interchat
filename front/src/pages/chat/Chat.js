@@ -36,7 +36,7 @@ export const Chat = (props) => {
     setRoomName(state.name);
     console.log("socket", socket);
     socket.on("authentication", (data) => {
-      if(data) {
+      if (data) {
         // auth succeeded everything good
         console.log(data);
       } else {
@@ -44,20 +44,24 @@ export const Chat = (props) => {
       }
     });
     socket.on("message", msg => {
-        console.log(msg);
+      console.log(msg);
     });
     socket.on("b_user_joined", (data) => {
-      setUsers((prev)=>[...prev, {userId: data.id, tag: data.tag}]);
+      console.log('JOINED', { data, users })
+      setUsers((prev) => [...prev, { userId: data.id, tag: data.tag }]);
     })
     socket.on("b_new_message", (data) => {
       console.log(data);
-      setMessages((prev)=>[...prev, data])
-    })  
+      setMessages((prev) => [...prev, data])
+    })
     socket.on("b_user_left", (data) => {
-      setUsers((prev)=> prev.filter(user => user.userId !== data.id));
+      console.log({ data, users })
+      const foundUsers = users.filter(user => user.userId !== data.userId);
+      console.log(foundUsers)
+      setUsers((prev) => { console.log(prev) });
     });
 
-    socket.emit("user_joined", {jwt: token, token: uuid, roomId: state.room.id});
+    socket.emit("user_joined", { jwt: token, token: uuid, roomId: state.room.id });
 
     // return () => {
     //   socket.emit("user_left");
@@ -69,7 +73,7 @@ export const Chat = (props) => {
       ...messages,
       { message: message, belongsToCurrentUser: true, audio: false },
     ]);
-    socket.emit("new_message", {message: message, audio: false});
+    socket.emit("new_message", { message: message, audio: false });
     setMessage("");
   };
 
@@ -98,7 +102,7 @@ export const Chat = (props) => {
       ...messages,
       { message: receivedMessage, belongsToCurrentUser: true, audio: true },
     ]);
-    socket.emit("new_message", {message: receivedMessage, audio: true});
+    socket.emit("new_message", { message: receivedMessage, audio: true });
   };
 
   const playMessage = (message) => {
