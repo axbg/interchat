@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {IconButton} from '@mui/material';
+import { IconButton } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 
 export const Speech = (props) => {
@@ -38,7 +38,7 @@ export const Speech = (props) => {
             recognition.stop()
             recognition.onend = () => {
                 console.log("Stopped listening per click")
-                props.onSpeechListened(finalTranscript);
+                props.onSpeechListened(message);
             }
         }
 
@@ -58,7 +58,9 @@ export const Speech = (props) => {
             //nono
             // document.getElementById('interim').innerHTML = interimTranscript
             // document.getElementById('final').innerHTML = finalTranscript
-            console.log(finalTranscript);
+            //added new
+            setMessage(finalTranscript)
+            // props.onSpeechListened(finalTranscript);
 
             //-------------------------COMMANDS------------------------------------
 
@@ -85,8 +87,8 @@ export const Speech = (props) => {
 
     return (
         <IconButton onClick={toggleListen}>
-                <MicIcon />
-            </IconButton>
+            <MicIcon />
+        </IconButton>
     );
 }
 

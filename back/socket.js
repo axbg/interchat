@@ -34,21 +34,21 @@ const bindWebSocket = (app) => {
         //extract data from jwt
         const userId = parseInitialJwt(data.jwt);
         console.log(userId);
-        if(userId) {
+        if (userId) {
             ctx.socket['userId'] = userId;
 
             //check that user has access to requested camera
             const hasAccessToRoom = roomService.hasAccessToRoom(userId, data.roomId);
 
-            if(hasAccessToRoom) {
+            if (hasAccessToRoom) {
                 ctx.socket['roomId'] = data.roomId;
-                
+
                 io.to(ctx.socket.id).emit("authentication", "ok");
-                
+
                 ctx.socket.join(data.roomId)
 
                 const user = await userService.getUserById(userId);
-                const userData = {'tag': user.tag, 'id': userId};
+                const userData = { 'tag': user.tag, 'id': userId };
                 ctx.socket.broadcast.to(data.roomId).emit("b_user_joined", userData);
             } else {
                 ctx.socket.to(data.token).emit("authentication", null);
@@ -62,8 +62,9 @@ const bindWebSocket = (app) => {
         const banned = await roomService.isBanned(ctx.socket['userId'], ctx.socket['roomId']);
         console.log(banned);
 
-        if(!banned) {
-            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'] });
+        if (!banned) {
+            const user = await userService.getUserById(ctx.socket['userId']);
+            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'], lang: user.input_lang });
         }
     });
 
@@ -79,9 +80,9 @@ const bindWebSocket = (app) => {
     io.on('disconnect', (ctx, data) => {
         console.log('unexpected disconnection');
 
-        if(ctx.socket['userId']) {
+        if (ctx.socket['userId']) {
             roomService.disconnect(ctx.socket['userId'], ctx.socket['roomId']);
-            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_user_left", { userId: ctx.socket['userId']});
+            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_user_left", { userId: ctx.socket['userId'] });
         }
     });
 }
