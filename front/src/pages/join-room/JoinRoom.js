@@ -8,14 +8,15 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 
 import "./JoinRoom.scss";
 
 export const JoinRoom = (props) => {
-  console.log(props.location.state)
   const [userPref, setUserPref] = useState({});
   let navigate = useNavigate();
+  const {state} = useLocation();
+  console.log(state);
 
   //add more languages
   const languages = [
