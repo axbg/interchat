@@ -63,7 +63,8 @@ const bindWebSocket = (app) => {
         const banned = await roomService.isBanned(ctx.socket['userId'], ctx.socket['roomId']);
 
         if(!banned) {
-            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'] });
+            const user = userService.getUserById(ctx.socket['userId']);
+            ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'], lang: user.input_lang });
         }
     });
 
