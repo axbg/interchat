@@ -103,7 +103,7 @@ const banUser = async (userId, roomId, bannedUserId) => {
     throw new KoaError('You are not the admin of this room!', 403);
   }
 
-  const bannedUser = await userService.getUserByTag(bannedUserId);
+  const bannedUser = await userService.getUserById(bannedUserId);
   const rooms = await bannedUser.getRooms({ where: { id: roomId } });
   const allocatedRoom = rooms[0];
 
@@ -126,7 +126,7 @@ const isBanned = async (userId, roomId) => {
   const user = await userService.getUserById(userId);
 
   const rooms = await user.getRooms({ where: { id: roomId } });
-  if (!rooms[0] || rooms[0].Membership.banned) {
+  if (!rooms[0] || rooms[0].Membership.ban) {
     return true;
   }
 

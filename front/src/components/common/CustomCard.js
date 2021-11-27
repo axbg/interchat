@@ -9,16 +9,15 @@ import Grid from '@mui/material/Grid';
 
 import "./CustomCard.scss";
 export const CustomCard = ({ user = 'SDFBDSDS', ...props }) => {
-    console.log(props)
     return (
         <Card >
             <CardContent>
                 <Typography sx={{ fontSize: 18 }} align="center" gutterBottom>
                     {props?.room?.name}
                 </Typography>
-                <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
+                {/* <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
                     {`Created by ${user}`}
-                </Typography>
+                </Typography> */}
                 <Typography sx={{ fontSize: 14 }} color="text.secondary" align="center" gutterBottom>
                     Topics discussed
                 </Typography>

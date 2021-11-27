@@ -19,6 +19,7 @@ export const Auth = () => {
             ...isMember && { "secret": secret },
         }).then(res => {
             localStorage.setItem('token', res?.data?.message?.token);
+            localStorage.setItem('tag', name);
             setSecret(res?.data?.message?.secret)
 
             if (isMember) {

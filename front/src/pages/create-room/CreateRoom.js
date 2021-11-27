@@ -117,7 +117,7 @@ export const CreateRoom = () => {
               name="public"
             />
           }
-          label="Private Room"
+          label="Public Room"
           labelPlacement="start"
         />
         <FormControl variant="standard" sx={{ width: 300 }}>
@@ -139,7 +139,7 @@ export const CreateRoom = () => {
       </div>
       <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} onClick={() => {
         console.log(createdInfo)
-        navigate('/join-room', { state: { createdInfo: createdInfo } })
+        navigate('/join-room', { state: { room: createdInfo } })
       }} />
     </Box>
   );

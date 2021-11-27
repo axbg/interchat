@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { IconButton, Input, Grid, Chip, Typography } from "@mui/material";
+import { IconButton, Input, Grid, Chip, Typography, Avatar } from "@mui/material";
 import { MessageBox } from "react-chat-elements";
 import ScrollToBottom from "react-scroll-to-bottom";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
@@ -17,10 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY || '';
 export const Chat = (props) => {
-  const [messages, setMessages] = useState([
-    { message: "Hello!", belongsToCurrentUser: false, audio: false },
-    { message: "My mother told me!", belongsToCurrentUser: false, audio: false },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const socket = useContext(SocketContext);
   const [users, setUsers] = useState([]);
@@ -29,11 +26,21 @@ export const Chat = (props) => {
   const uuid = uuidv4();
   const { state } = useLocation();
   const token = localStorage.getItem('token');
+  const currentUserTag = localStorage.getItem('tag');
+  const [currentUserId, setCurrentUserId] = useState('');
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+
+  useEffect(() => {
+    setCurrentUserId(users.find(user => user.tag === currentUserTag) && users.find(user => user.tag === currentUserTag).id);
+    setIsCurrentUserAdmin(users.find(user => user.tag === currentUserTag) && users.find(user => user.tag === currentUserTag).Membership.admin);
+    console.log(users);
+  }, [users, currentUserTag]);
 
   useEffect(() => {
     setUsers(state.connectedUsers);
     setTags(state.currentTags.split('#'));
     setRoomName(state.name);
+
     console.log("socket", socket);
     socket.on("authentication", (data) => {
       if (data) {
@@ -165,7 +172,7 @@ export const Chat = (props) => {
             Chat {roomName}
           </Grid>
           {tags && tags.map((topic) => (
-            <Chip color="secondary" key={topic} label={`#${topic}`} variant="outlined" />
+            <Chip style={{marginTop:'40px'}} color="secondary" key={topic} label={`#${topic}`} variant="outlined" />
           ))}
         </Grid>
       </Stack>
@@ -173,13 +180,16 @@ export const Chat = (props) => {
         <ScrollToBottom className="participants">
           {users && users.map((user) => (
             <Stack direction="row" spacing={2}>
-              <Typography pb={2} sx={{ fontSize: 18 }}>{user.tag}</Typography>
               <Grid item xs={1}>
-                <MicIcon />
+                <Avatar alt="avatar" src={`https://avatars.dicebear.com/api/avataaars/${user.id}.svg`}/>
               </Grid>
-              <Grid item xs={1}>
-                <BlockIcon />
-              </Grid>
+              <Typography style={{paddingLeft:'10px'}} pb={2} sx={{ fontSize: 18 }}>{user.tag}</Typography>
+              {isCurrentUserAdmin && <Grid item xs={1}>
+                <IconButton onClick={() => {
+                  socket.emit("ban", {bannedUser: user.id});
+                }
+              }><BlockIcon /></IconButton>
+              </Grid>}
             </Stack>
           ))}
         </ScrollToBottom>
@@ -193,7 +203,7 @@ export const Chat = (props) => {
                     position={message.belongsToCurrentUser ? 'right' : 'left'}
                     type={'text'}
                     text={message.message}
-                    avatar={'https://avatars.dicebear.com/api/avataaars/2.svg'}
+                    avatar={`https://avatars.dicebear.com/api/avataaars/${message.belongsToCurrentUser ? currentUserId : message.userId}.svg`}
                   />
                 )
               } else {
@@ -203,7 +213,7 @@ export const Chat = (props) => {
                       <div className="rce-mbox-body">
                         <div className="rce-mbox-title rce-mbox-title--clear">
                           <div className="rce-avatar-container default default">
-                            <img alt="" src="https://avatars.dicebear.com/api/avataaars/2.svg" className="rce-avatar" />
+                            <img alt="" src={`https://avatars.dicebear.com/api/avataaars/${message.belongsToCurrentUser ? currentUserId : message.userId}.svg`} className="rce-avatar" />
                           </div>
                         </div>
                         <div className="rce-mbox-text right">

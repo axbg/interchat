@@ -58,9 +58,9 @@ const bindWebSocket = (app) => {
 
     io.on('new_message', async (ctx, data) => {
         await messageService.addMessage(ctx.socket['userId'], ctx.socket['roomId'], data.message, data.audio);
-        
         // check to see if user is banned
         const banned = await roomService.isBanned(ctx.socket['userId'], ctx.socket['roomId']);
+        console.log(banned);
 
         if(!banned) {
             ctx.socket.broadcast.to(ctx.socket['roomId']).emit("b_new_message", { message: data.message, audio: data.audio, userId: ctx.socket['userId'] });
