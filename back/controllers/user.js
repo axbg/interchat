@@ -1,6 +1,7 @@
 const service = require('../services').user;
 const jwt = require('jsonwebtoken');
 const properties = require('../properties');
+const curateInstance = require('../services/utils').curateInstance;
 
 const respondWith = require('../services').utils.respondWith;
 
@@ -8,25 +9,26 @@ const login = async (ctx) => {
   const tag = ctx.request.body.tag;
 
   if (!tag) {
-    return respondWith(ctx, 400, "Username was not found");
+    return respondWith(ctx, 400, "Tag field was not provided");
   }
 
-  let user;
-  if (await service.getUserByTag(tag)) {
-    user = await service.getUserById(ctx.request.body.id);
-
-    if (!user) {
-      return respondWith(ctx, 400, "Username already in use");
+  let user = await service.getUserByTag(tag)
+  if (user) {
+    const secret = ctx.request.body.secret;
+    if (!secret || user.secret !== secret) {
+      return respondWith(ctx, 400, "Tag already in use");
     }
   } else {
-    user = await service.createUser(ctx.request.body);
+    const userInfo = curateInstance(ctx.request.body);
+    delete userInfo.secret;
+    user = await service.createUser(userInfo);
   }
 
   return respondWith(ctx, 200, jwt.sign(JSON.stringify({ id: user.id, iss: properties.JWT_ISSUER }), properties.JWT_SECRET));
 };
 
 const updatePreferences = async (ctx) => {
-  await service.updatePreferences(ctx.session.passport.user, ctx.request.body.input_lang, ctx.request.body.output_lang);
+  await service.updatePreferences(ctx.session.passport.user, ctx.request.body);
   return respondWith(ctx, 200, "Updated");
 }
 

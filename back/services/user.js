@@ -15,16 +15,10 @@ const createUser = async (profile) => {
   return await UserModel.create(curateInstance(profile));
 }
 
-const updatePreferences = async (id, input_lang, output_lang) => {
-  const user = await getUserById(id);
-
-  if(user) {
-    user.input_lang = input_lang || user.input_lang;
-    user.output_lang = output_lang || user.output_lang;
-    await user.save();
-  }
-
-  return true;
+const updatePreferences = async (id, updatedData) => {
+  const data = curateInstance(updatedData);
+  delete data.tag;
+  return await UserModel.update(data, { where: { id: id}});
 }
 
 const logout = async (id) => {
