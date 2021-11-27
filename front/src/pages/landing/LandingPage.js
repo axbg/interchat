@@ -8,8 +8,8 @@ export const LandingPage = () => {
     return(
         <Container style={{paddingTop: '30px'}}>
             <img alt="illustration" src={illustration} height="300" style={{paddingBottom: '30px'}}/>
-            <Grid container rowSpacing={4} spacing={{ xs: 1, md: 3 }} columns={{ xs: 1, sm: 8, md: 12 }}>
-                    <Grid item xs={1} sm={6} md={6}>
+            <Grid container rowSpacing={4} spacing={{ xs: 1, md: 3 }} columns={{ xs: 1, sm: 8, md: 12 }} >
+                    <Grid item xs={4} sm={8} md={6}>
                         <Card >
                             <CardContent>
                                 <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -23,7 +23,7 @@ export const LandingPage = () => {
                             </CardActions>
                         </Card>
                     </Grid>
-                    <Grid item xs={1} sm={6} md={6}>
+                    <Grid item xs={"auto"} sm={8} md={6}>
                         <Card >
                             <CardContent>
                                 <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>

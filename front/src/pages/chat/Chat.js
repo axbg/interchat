@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { IconButton, Input, Grid, Chip, Typography } from "@mui/material";
 import { MessageBox } from "react-chat-elements";
 import ScrollToBottom from "react-scroll-to-bottom";
@@ -10,6 +10,7 @@ import "./Chat.scss";
 import { Speech } from "../../components/Speech/Speech";
 import Stack from "@mui/material/Stack";
 import _ from 'lodash';
+import { SocketContext } from '../../socketContext'
 
 const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY || '';
 export const Chat = () => {
@@ -18,6 +19,13 @@ export const Chat = () => {
     { text: "My mother told me!", belongsToCurrentUser: false, isAudio: false },
   ]);
   const [message, setMessage] = useState("");
+  const socket = useContext(SocketContext)
+
+  useEffect(() => {
+    socket.on("message", msg => {
+        console.log(msg);
+    })
+}, [socket])
 
   const processMessage = () => {
     setMessages([
@@ -100,21 +108,21 @@ export const Chat = () => {
   }
 
   //not final
-  useEffect(() => {
-    if (_.isEmpty(messages)) {
-      return;
-    }
-    const translatedMessages = messages.map(async msg => {
-      if (!msg.belongsToCurrentUser) {
-        return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
-      } else {
-        return msg;
-      }
-    })
-    return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
-    // setMessages(translatedMessages)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // useEffect(() => {
+  //   if (_.isEmpty(messages)) {
+  //     return;
+  //   }
+  //   const translatedMessages = messages.map(async msg => {
+  //     if (!msg.belongsToCurrentUser) {
+  //       return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
+  //     } else {
+  //       return msg;
+  //     }
+  //   })
+  //   return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
+  //   // setMessages(translatedMessages)
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
 
   return (
     <div className="chat">

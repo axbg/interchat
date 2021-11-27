@@ -10,6 +10,7 @@ import { JoinRoom } from './pages/join-room/JoinRoom';
 import { Chat } from './pages/chat/Chat';
 import { Routes, Route } from "react-router-dom";
 import { LandingPage } from './pages/landing/LandingPage';
+import { SocketProvider } from './socketContext';
 
 function App() {
   const darkTheme = createTheme({
@@ -30,6 +31,7 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      {/* <SocketProvider> */}
       <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -39,6 +41,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </div>
+      {/* </SocketProvider> */}
     </ThemeProvider>
   );
 }
