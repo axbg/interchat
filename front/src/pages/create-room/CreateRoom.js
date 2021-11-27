@@ -20,6 +20,7 @@ export const CreateRoom = () => {
   const [room, setRoom] = useState({ public: false });
   const [open, setOpen] = useState(false);
   const [createdInfo, setCreatedInfo] = useState({});
+  const token = localStorage.getItem('token');
   const handleChange = (event) => {
     setRoom((prev) => {
       return {
@@ -31,7 +32,7 @@ export const CreateRoom = () => {
 
   const handleClickOpen = () => {
     axios.post('http://localhost:8080/api/room', room, {
-      headers: { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' }
+      headers: { "Authorization": `Bearer ${token}` }
     }).then(res => {
       console.log(res?.data?.message[0])
       setCreatedInfo(res)

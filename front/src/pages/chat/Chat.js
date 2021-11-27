@@ -13,43 +13,82 @@ import _ from 'lodash';
 import { SocketContext } from '../../socketContext'
 import { useLocation } from 'react-router';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY || '';
 export const Chat = (props) => {
   const [messages, setMessages] = useState([
-    { text: "Hello!", belongsToCurrentUser: false, isAudio: false },
-    { text: "My mother told me!", belongsToCurrentUser: false, isAudio: false },
+    { message: "Hello!", belongsToCurrentUser: false, audio: false },
+    { message: "My mother told me!", belongsToCurrentUser: false, audio: false },
   ]);
   const [message, setMessage] = useState("");
-  const socket = useContext(SocketContext)
-
-//   useEffect(() => {
-//     socket.on("message", msg => {
-//         console.log(msg);
-//     })
-// }, [socket])
-
+  const socket = useContext(SocketContext);
+  const [users, setUsers] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [roomName, setRoomName] = useState('');
+  const uuid = uuidv4();
   const { state } = useLocation();
-  console.log(state);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    socket.on("authentication", (data) => {
+      if(data) {
+        // auth succeeded everything good
+        console.log(data);
+      } else {
+        console.log('connection did not succeed');
+      }
+    });
+    socket.on("message", msg => {
+        console.log(msg);
+    });
+    socket.on("b_user_joined", (data) => {
+      setUsers([...users, {userId: data.userId, tag: data.tag}])
+    })
+    socket.on("b_new_message", (data) => {
+      setMessages([...messages, data]);
+    })  
+    socket.on("b_user_left", (data) => {
+      const remainingUsers = users.filter(user => user.userId !== data.userId);
+      setUsers(remainingUsers);
+    });
+    socket.emit("user_joined", {jwt: token, token: uuid, roomId: state.room.id});
+
+    return () => {
+      socket.emit("user_left");
+    };
+  }, [socket, state.room.id, uuid])
 
   const processMessage = () => {
     setMessages([
       ...messages,
-      { text: message, belongsToCurrentUser: true, isAudio: false },
+      { message: message, belongsToCurrentUser: true, audio: false },
     ]);
+    socket.emit("new_message", {message: message, audio: false});
     setMessage("");
   };
 
   useEffect(() => {
     console.log(state?.room)
-    axios.get('http://localhost:8080/api/room/messages',
-      {
-        headers:
-          { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' },
-        params: { roomId: state.room.id, limit: 5, skip: 0 }
-      }).then(res => {
-        console.log(res);
-      })
+    // axios.get('http://localhost:8080/api/room/messages',
+    //   {
+    //     headers:
+    //       { "Authorization": `Bearer ${token}` },
+    //     params: { roomId: state.room.id, limit: 5, skip: 0 }
+    //   }).then(res => {
+    //     console.log(res);
+    //   })
+    axios.post('http://localhost:8080/api/room/join', { id: state.room.id }, {
+      headers: { "Authorization": `Bearer ${token}` }
+    }).then(res => {
+      const connectedUsers = res.data.message.roomDetails[0].Users;
+      const currentTags = res.data.message.roomDetails[0].tags;
+      const name = res.data.message.roomDetails[0].name;
+      setUsers(connectedUsers);
+      setTags(currentTags.split('#'));
+      setRoomName(name);
+      console.log(res);
+    })
   }, [state?.room])
 
   const handleKeyDown = (event) => {
@@ -62,39 +101,10 @@ export const Chat = (props) => {
     console.log(receivedMessage);
     setMessages([
       ...messages,
-      { text: receivedMessage, belongsToCurrentUser: true, isAudio: true },
+      { message: receivedMessage, belongsToCurrentUser: true, audio: true },
     ]);
+    socket.emit("new_message", {message: message, audio: true});
   };
-  const users = [
-    {
-      key: 1,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 2,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 3,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 4,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 5,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 6,
-      name: "Lorena Bodea",
-    },
-    {
-      key: 7,
-      name: "Lorena Bodea",
-    },
-  ];
 
   const playMessage = (message) => {
     var msg = new SpeechSynthesisUtterance();
@@ -131,7 +141,7 @@ export const Chat = (props) => {
     }
     // const translatedMessages = messages.map(async msg => {
     //   if (!msg.belongsToCurrentUser) {
-    //     return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
+    //     return getTranslatedText(msg.message, 'en', 'ro').then(res => { return { ...msg, message: res } });
     //   } else {
     //     return msg;
     //   }
@@ -155,12 +165,10 @@ export const Chat = (props) => {
             <GroupsIcon />
           </Grid>
           <Grid item xs={2}>
-            Chat kernel_panic
+            Chat {roomName}
           </Grid>
-          {Array.from(Array(4)).map((_, index) => (
-            <Grid item xs={2} key={index}>
-              <Chip label="#visitBucharest" variant="outlined" size="small" />
-            </Grid>
+          {tags.map((topic) => (
+            <Chip color="secondary" key={topic} label={`#${topic}`} variant="outlined" />
           ))}
         </Grid>
       </Stack>
@@ -168,7 +176,7 @@ export const Chat = (props) => {
         <ScrollToBottom className="participants">
           {users.map((user) => (
             <Stack direction="row" spacing={2}>
-              <Typography pb={2} sx={{ fontSize: 18 }}>{user.name}</Typography>
+              <Typography pb={2} sx={{ fontSize: 18 }}>{user.tag}</Typography>
               <Grid item xs={1}>
                 <MicIcon />
               </Grid>
@@ -181,13 +189,13 @@ export const Chat = (props) => {
         <ScrollToBottom className="messages" debug={false}>
           {
             messages.map(message => {
-              if (!message.isAudio) {
+              if (!message.audio) {
                 return (
                   <MessageBox
                     notch={false}
                     position={message.belongsToCurrentUser ? 'right' : 'left'}
                     type={'text'}
-                    text={message.text}
+                    text={message.message}
                     avatar={'https://avatars.dicebear.com/api/avataaars/2.svg'}
                   />
                 )
@@ -202,7 +210,7 @@ export const Chat = (props) => {
                           </div>
                         </div>
                         <div className="rce-mbox-text right">
-                          <IconButton onClick={() => playMessage(message.text)}>
+                          <IconButton onClick={() => playMessage(message.message)}>
                             <PlayCircleIcon />
                           </IconButton>
                         </div>

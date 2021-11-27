@@ -10,9 +10,10 @@ import './ExploreRooms.scss';
 export const ExploreRooms = () => {
     const [rooms, setRooms] = useState([]);
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
     useEffect(() => {
         axios.get('http://localhost:8080/api/room', {
-            headers: { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' }
+            headers: { "Authorization": `Bearer ${token}` }
         }).then(res => {
 
             console.log(res);

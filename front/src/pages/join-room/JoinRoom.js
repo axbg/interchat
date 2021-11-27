@@ -17,6 +17,7 @@ export const JoinRoom = (props) => {
   const [userPref, setUserPref] = useState({});
   let navigate = useNavigate();
   const { state } = useLocation();
+  const token = localStorage.getItem('token');
   console.log(state);
 
   //add more languages
@@ -32,20 +33,13 @@ export const JoinRoom = (props) => {
     { label: "Español", value: 'es-ES' },
     { label: "Deutsch", value: 'de-DE' },
   ];
-  const userCreator = "LaraMadalina";
 
   const handleClick = (v) => {
-    axios.post('http://localhost:8080/api/room/join', { id: state.room.id }, {
-      headers: { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' }
-    }).then(res => {
       axios.put('http://localhost:8080/api/user', userPref, {
-        headers: { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' }
-      }).then(res => {
-        console.log(res);
+        headers: { "Authorization": `Bearer ${token}` }
+      }).then(() => {
+        navigate('/chat', { state: { room: state?.room } });
       });
-      navigate('/chat', { state: { room: state?.room } })
-
-    })
   };
 
   useEffect(() => {
@@ -60,7 +54,7 @@ export const JoinRoom = (props) => {
   return (
     <Box pt={10}>
       <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
-        You’re preparing to enter in room {state?.room?.name} created by {userCreator}
+        You’re preparing to enter in room {state?.room?.name}
       </Typography>
       <Stack direction="column" spacing={1} p={4}>
         <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>

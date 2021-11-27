@@ -11,6 +11,7 @@ import { Chat } from './pages/chat/Chat';
 import { Routes, Route } from "react-router-dom";
 import { LandingPage } from './pages/landing/LandingPage';
 import { SocketProvider } from './socketContext';
+import { Auth } from './pages/auth/Auth';
 
 function App() {
   const darkTheme = createTheme({
@@ -34,7 +35,8 @@ function App() {
       {/* <SocketProvider> */}
       <div className="App">
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<Auth />} />
+          <Route path="/landing" element={<LandingPage/>} />
           <Route path="/explore-rooms" element={<ExploreRooms />} />
           <Route path="/create-room" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
