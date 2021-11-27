@@ -24,7 +24,8 @@ const login = async (ctx) => {
     user = await service.createUser(userInfo);
   }
 
-  return respondWith(ctx, 200, jwt.sign(JSON.stringify({ id: user.id, iss: properties.JWT_ISSUER }), properties.JWT_SECRET));
+  const token = jwt.sign(JSON.stringify({ id: user.id, iss: properties.JWT_ISSUER }), properties.JWT_SECRET);
+  return respondWith(ctx, 200, { token: token, secret: user.secret });
 };
 
 const updatePreferences = async (ctx) => {

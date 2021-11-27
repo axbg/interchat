@@ -23,12 +23,12 @@ const User = sequelize.define('User', {
   },
   input_lang: {
     type: DataTypes.STRING,
-    allowNull: "en-US"
-
+    allowNull: true,
+    default: "en-US"
   },
   output_lang: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     default: "en-US"
   }
 });
