@@ -3,7 +3,7 @@ const KoaError = require('../types/error');
 
 const userService = require('./user');
 
-const addMessage = async (userId, roomId, message) => {
+const addMessage = async (userId, roomId, message, audio) => {
     const user = await userService.getUserById(userId);
     const rooms = user.getRooms({ where: { id: roomId } });
 
@@ -14,7 +14,8 @@ const addMessage = async (userId, roomId, message) => {
     return await MessageModel.create({
         userId: userId,
         roomId: roomId,
-        message: message
+        message: message,
+        audio: audio
     })
 }
 

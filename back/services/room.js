@@ -24,8 +24,13 @@ const listMembership = async (userId) => {
 const createRoom = async (userId, data) => {
   const user = await userService.getUserById(userId);
 
-  if (!data.name || !data.description || !data.public || !data.tags || !data.picture) {
+  if (!data.name || !data.description || !data.tags || !data.picture) {
     throw new KoaError('One or more required fields are missing: name, description, tags, picture', 400);
+  }
+
+  const existingRoom = await RoomModel.findOne({where: { name: data.name}});
+  if(existingRoom) {
+    throw new KoaError('A room with this name already exists!', 400);
   }
 
   const room = await RoomModel.create(curateInstance(data));
@@ -72,22 +77,34 @@ const joinRoom = async (userId, data) => {
   return { roomDetails: roomDetails, messages: lastMessages };
 }
 
+const disconnect = async (userId, data) => {
+  const user = await userService.getUserById(userId);
+  const rooms = await user.getRooms({ where: { id: data.id } });
+  const allocatedRoom = rooms[0];
+
+  if (allocatedRoom) {
+    await user.addRoom(room, { through: { active: false } });
+  }
+
+  return true;
+}
+
 const leaveRoom = async (userId, data) => {
   const user = await userService.getUserById(userId);
   const room = await RoomModel.findOne({ where: { id: data.id } });
   return await user.removeRoom(room);
 }
 
-const banUser = async (userId, data) => {
+const banUser = async (userId, roomId, bannedUserId) => {
   const user = await userService.getUserById(userId);
 
-  const ownedRooms = await user.getRooms({ where: { id: data.roomId } });
+  const ownedRooms = await user.getRooms({ where: { id: roomId } });
   if (!ownedRooms[0] || !ownedRooms[0].Membership.admin) {
     throw new KoaError('You are not the admin of this room!', 403);
   }
 
-  const bannedUser = await userService.getUserByTag(data.userTag);
-  const rooms = await bannedUser.getRooms({ where: { id: data.roomId } });
+  const bannedUser = await userService.getUserByTag(bannedUserId);
+  const rooms = await bannedUser.getRooms({ where: { id: roomId } });
   const allocatedRoom = rooms[0];
 
   if (allocatedRoom) {
@@ -95,6 +112,25 @@ const banUser = async (userId, data) => {
   }
 
   return true;
+}
+
+const hasAccessToRoom = async (userId, roomId) => {
+  const user = await userService.getUserById(userId);
+  const rooms = await user.getRooms({ where: { id: data.id } });
+  const allocatedRoom = rooms[0];
+
+  return allocatedRoom ? true : false;
+}
+
+const isBanned = async (userId, roomId) => {
+  const user = await userService.getUserById(userId);
+
+  const rooms = await user.getRooms({ where: { id: data.id } });
+  if (!rooms[0] || rooms[0].Membership.banned) {
+    return true;
+  }
+
+  return false;
 }
 
 module.exports = {
@@ -105,5 +141,8 @@ module.exports = {
   removeRoom,
   joinRoom,
   leaveRoom,
-  banUser
+  disconnect,
+  banUser,
+  hasAccessToRoom,
+  isBanned
 };

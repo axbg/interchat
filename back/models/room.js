@@ -24,7 +24,8 @@ const Room = sequelize.define('Room', {
   },
   public: {
     type: DataTypes.BOOLEAN,
-    allowNull: false
+    allowNull: false,
+    default: false
   },
   tags: {
     type: DataTypes.TEXT
