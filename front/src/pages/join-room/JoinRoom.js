@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import { CircularProgress } from '@mui/material'
 import { useNavigate, useLocation } from 'react-router';
 import _ from 'lodash';
 import "./JoinRoom.scss";
@@ -15,10 +16,12 @@ import axios from "axios";
 
 export const JoinRoom = (props) => {
   const [userPref, setUserPref] = useState({});
+  const [room, setRoom] = useState({});
   let navigate = useNavigate();
   const { state } = useLocation();
   const token = localStorage.getItem('token');
   console.log(state);
+  const [loading, setLoading] = useState(true);
 
   //add more languages
   const languages = [
@@ -53,22 +56,50 @@ export const JoinRoom = (props) => {
     if (_.isEmpty(state)) {
       return;
     }
+    setLoading(true);
     if (state.createdInfo) {
       console.log('get info about room')
-    }
-  }, [state])
+      axios.get('http://localhost:8080/api/room', {
+        headers: { "Authorization": `Bearer ${token}` }
+      }).then(res => {
 
+        const roomFound = res?.data?.message.filter(item => item.id === state?.createdInfo?.RoomId)
+        console.log(roomFound[0]);
+        const foundRoom = {
+          ...roomFound[0],
+          tags: roomFound[0]?.tags.split('#')
+        }
+        setRoom(foundRoom);
+        setLoading(false)
+      })
+    } else {
+      setRoom(state?.room);
+      setLoading(false)
+
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (loading) {
+    return (
+      <Box pt={10}>
+        <CircularProgress />
+      </Box>
+    )
+  }
   return (
+
     <Box pt={10}>
       <Typography sx={{ fontSize: 17 }} align="center" gutterBottom>
-        You’re preparing to enter in room {state?.room?.name}
+        You’re preparing to enter in room {room?.name}
       </Typography>
       <Stack direction="column" spacing={1} p={4}>
         <Typography sx={{ fontSize: 14 }} align="center" gutterBottom>
           Topics discussed
         </Typography>
         <Stack direction="row" spacing={1} justifyContent="center">
-          {state?.room?.tags?.map((topic) => (
+          {room?.tags?.map((topic) => (
             <Chip color="secondary" key={topic} label={`#${topic}`} variant="outlined" />
           ))}
         </Stack>

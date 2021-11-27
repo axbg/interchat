@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormControl from "@mui/material/FormControl";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
@@ -10,8 +10,7 @@ import Box from "@mui/material/Box";
 import Switch from "@mui/material/Switch";
 import Stack from "@mui/material/Stack";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
+import { ConfirmationDialog } from './ConfirmationDialog'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "./CreateRoom.scss";
@@ -20,6 +19,8 @@ export const CreateRoom = () => {
   const [room, setRoom] = useState({ public: false });
   const [open, setOpen] = useState(false);
   const [createdInfo, setCreatedInfo] = useState({});
+  let navigate = useNavigate();
+
   const token = localStorage.getItem('token');
   const handleChange = (event) => {
     setRoom((prev) => {
@@ -35,7 +36,7 @@ export const CreateRoom = () => {
       headers: { "Authorization": `Bearer ${token}` }
     }).then(res => {
       console.log(res?.data?.message[0])
-      setCreatedInfo(res)
+      setCreatedInfo(res?.data?.message[0])
       setOpen(true);
     })
   };
@@ -136,44 +137,11 @@ export const CreateRoom = () => {
           </Button>
         </Box>
       </div>
-      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} />
+      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} onClick={() => {
+        console.log(createdInfo)
+        navigate('/join-room', { state: { createdInfo: createdInfo } })
+      }} />
     </Box>
   );
 };
 
-function ConfirmationDialog(props) {
-  const { onClose, open } = props;
-  const code = "CDC3ce44";
-  let navigate = useNavigate();
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleClick = (v) => {
-    navigator.clipboard.writeText(v);
-    console.log(props.createdInfo)
-    navigate('/join-room', { state: { createdInfo: props.createdInfo } })
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>You created a room! </DialogTitle>
-      <Typography className="content" variant="subtitle1" component="div">
-        Share this code with your friends to join! {code}
-      </Typography>
-
-      <Box className="action-buttons">
-        <Button color="tertiary" variant="text" onClick={() => handleClose()}>
-          cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => handleClick(code)}
-        >
-          Copy Code and enter room
-        </Button>
-      </Box>
-    </Dialog>
-  );
-}
