@@ -10,14 +10,17 @@ import "./Chat.scss";
 import { Speech } from "../../components/Speech/Speech";
 import Stack from "@mui/material/Stack";
 import _ from 'lodash';
-
+import { useLocation } from 'react-router';
+import axios from 'axios';
 const API_KEY = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY || '';
-export const Chat = () => {
+export const Chat = (props) => {
   const [messages, setMessages] = useState([
     { text: "Hello!", belongsToCurrentUser: false, isAudio: false },
     { text: "My mother told me!", belongsToCurrentUser: false, isAudio: false },
   ]);
   const [message, setMessage] = useState("");
+  const { state } = useLocation();
+  console.log(state);
 
   const processMessage = () => {
     setMessages([
@@ -26,6 +29,18 @@ export const Chat = () => {
     ]);
     setMessage("");
   };
+
+  useEffect(() => {
+    console.log(state?.room)
+    axios.get('http://localhost:8080/api/room/messages',
+      {
+        headers:
+          { "Authorization": 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjVlN2FjMWE3LTk5MmMtNDJkZC1iMDIzLTc3NTBjMTE5MDhkMCIsImlzcyI6InNvbWVvbmUifQ.Nmk1sOYbtWioeNfKt05Zfx5nDrW3f8wtalOF-p7ky3w' },
+        params: { roomId: state.room.id, limit: 5, skip: 0 }
+      }).then(res => {
+        console.log(res);
+      })
+  }, [state?.room])
 
   const handleKeyDown = (event) => {
     if (event.keyCode === 13) {
@@ -104,14 +119,14 @@ export const Chat = () => {
     if (_.isEmpty(messages)) {
       return;
     }
-    const translatedMessages = messages.map(async msg => {
-      if (!msg.belongsToCurrentUser) {
-        return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
-      } else {
-        return msg;
-      }
-    })
-    return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
+    // const translatedMessages = messages.map(async msg => {
+    //   if (!msg.belongsToCurrentUser) {
+    //     return getTranslatedText(msg.text, 'en', 'ro').then(res => { return { ...msg, text: res } });
+    //   } else {
+    //     return msg;
+    //   }
+    // })
+    // return Promise.all(translatedMessages).then(values => { console.log(values); setMessages(values) })
     // setMessages(translatedMessages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -154,39 +169,39 @@ export const Chat = () => {
           ))}
         </ScrollToBottom>
         <ScrollToBottom className="messages" debug={false}>
-        {
+          {
             messages.map(message => {
-                if(!message.isAudio) {
-                    return (
-                    <MessageBox
-                        notch={false}
-                        position={message.belongsToCurrentUser ? 'right' : 'left'}
-                        type={'text'}
-                        text={message.text}
-                        avatar={'https://avatars.dicebear.com/api/avataaars/2.svg'}
-                    />
-                    )
-                } else {
-                    return (
-                        <div className="rce-container-mbox">
-                        <div className={`rce-mbox rce-mbox-${message.belongsToCurrentUser ? 'right' : 'left'} rce-mbox--clear-notch`}>
-                        <div className="rce-mbox-body">
+              if (!message.isAudio) {
+                return (
+                  <MessageBox
+                    notch={false}
+                    position={message.belongsToCurrentUser ? 'right' : 'left'}
+                    type={'text'}
+                    text={message.text}
+                    avatar={'https://avatars.dicebear.com/api/avataaars/2.svg'}
+                  />
+                )
+              } else {
+                return (
+                  <div className="rce-container-mbox">
+                    <div className={`rce-mbox rce-mbox-${message.belongsToCurrentUser ? 'right' : 'left'} rce-mbox--clear-notch`}>
+                      <div className="rce-mbox-body">
                         <div className="rce-mbox-title rce-mbox-title--clear">
-                            <div className="rce-avatar-container default default">
-                                <img alt="" src="https://avatars.dicebear.com/api/avataaars/2.svg" className="rce-avatar"/>
-                            </div>
+                          <div className="rce-avatar-container default default">
+                            <img alt="" src="https://avatars.dicebear.com/api/avataaars/2.svg" className="rce-avatar" />
+                          </div>
                         </div>
-                      <div className="rce-mbox-text right">
-                        <IconButton onClick={() => playMessage(message.text)}>
-                          <PlayCircleIcon />
-                        </IconButton>
+                        <div className="rce-mbox-text right">
+                          <IconButton onClick={() => playMessage(message.text)}>
+                            <PlayCircleIcon />
+                          </IconButton>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            }
-          })}
+                );
+              }
+            })}
         </ScrollToBottom>
 
       </Stack>
