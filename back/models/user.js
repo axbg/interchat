@@ -25,7 +25,15 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  input_lang_voice: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   output_lang: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  output_lang_voice: {
     type: DataTypes.STRING,
     allowNull: false
   }

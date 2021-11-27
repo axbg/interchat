@@ -28,7 +28,7 @@ const login = async (ctx) => {
 };
 
 const updatePreferences = async (ctx) => {
-  await service.updatePreferences(ctx.session.passport.user, ctx.request.body.input_lang, ctx.request.body.output_lang);
+  await service.updatePreferences(ctx.session.passport.user, ctx.request.body);
   return respondWith(ctx, 200, "Updated");
 }
 
