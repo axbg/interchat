@@ -10,8 +10,7 @@ import Box from "@mui/material/Box";
 import Switch from "@mui/material/Switch";
 import Stack from "@mui/material/Stack";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
+import { ConfirmationDialog } from './ConfirmationDialog'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "./CreateRoom.scss";
@@ -20,7 +19,6 @@ export const CreateRoom = () => {
   const [room, setRoom] = useState({ public: false });
   const [open, setOpen] = useState(false);
   const [createdInfo, setCreatedInfo] = useState({});
-  const [redirectToJoin, setRedirectToJoin] = useState(false);
   let navigate = useNavigate();
 
   const token = localStorage.getItem('token');
@@ -38,7 +36,7 @@ export const CreateRoom = () => {
       headers: { "Authorization": `Bearer ${token}` }
     }).then(res => {
       console.log(res?.data?.message[0])
-      setCreatedInfo(res)
+      setCreatedInfo(res?.data?.message[0])
       setOpen(true);
     })
   };
@@ -55,12 +53,6 @@ export const CreateRoom = () => {
     { title: "romanianHabits", year: 1957 },
     { title: "speakRomanian", year: 1993 },
   ];
-
-  useEffect(() => {
-    if (redirectToJoin) {
-      navigate('/join-room', { state: { room: createdInfo } });
-    }
-  }, [redirectToJoin]);
 
   return (
     <Box pt={30}>
@@ -145,45 +137,11 @@ export const CreateRoom = () => {
           </Button>
         </Box>
       </div>
-      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} setRedirectToJoin={setRedirectToJoin} />
+      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} onClick={() => {
+        console.log(createdInfo)
+        navigate('/join-room', { state: { createdInfo: createdInfo } })
+      }} />
     </Box>
   );
 };
 
-function ConfirmationDialog(props) {
-  const { onClose, open } = props;
-  const code = "CDC3ce44";
-
-  const handleClose = () => {
-    onClose();
-  };
-  const [test, setTest] = useState(false);
-
-  const handleClick = (v) => {
-    navigator.clipboard.writeText(v);
-    console.log(props.createdInfo)
-    props.setRedirectToJoin(true);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>You created a room! </DialogTitle>
-      <Typography className="content" variant="subtitle1" component="div">
-        Share this code with your friends to join! {code}
-      </Typography>
-
-      <Box className="action-buttons">
-        <Button color="tertiary" variant="text" onClick={() => handleClose()}>
-          cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => handleClick(code)}
-        >
-          Copy Code and enter room
-        </Button>
-      </Box>
-
-    </Dialog>
-  );
-}
