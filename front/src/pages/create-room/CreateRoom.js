@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormControl from "@mui/material/FormControl";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
@@ -20,6 +20,9 @@ export const CreateRoom = () => {
   const [room, setRoom] = useState({ public: false });
   const [open, setOpen] = useState(false);
   const [createdInfo, setCreatedInfo] = useState({});
+  const [redirectToJoin, setRedirectToJoin] = useState(false);
+  let navigate = useNavigate();
+
   const token = localStorage.getItem('token');
   const handleChange = (event) => {
     setRoom((prev) => {
@@ -52,6 +55,12 @@ export const CreateRoom = () => {
     { title: "romanianHabits", year: 1957 },
     { title: "speakRomanian", year: 1993 },
   ];
+
+  useEffect(() => {
+    if (redirectToJoin) {
+      navigate('/join-room', { state: { room: createdInfo } });
+    }
+  }, [redirectToJoin]);
 
   return (
     <Box pt={30}>
@@ -136,7 +145,7 @@ export const CreateRoom = () => {
           </Button>
         </Box>
       </div>
-      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} />
+      <ConfirmationDialog open={open} onClose={handleClose} createdInfo={createdInfo} setRedirectToJoin={setRedirectToJoin} />
     </Box>
   );
 };
@@ -144,16 +153,16 @@ export const CreateRoom = () => {
 function ConfirmationDialog(props) {
   const { onClose, open } = props;
   const code = "CDC3ce44";
-  let navigate = useNavigate();
 
   const handleClose = () => {
     onClose();
   };
+  const [test, setTest] = useState(false);
 
   const handleClick = (v) => {
     navigator.clipboard.writeText(v);
     console.log(props.createdInfo)
-    navigate('/join-room', { state: { createdInfo: props.createdInfo } })
+    props.setRedirectToJoin(true);
   };
 
   return (
@@ -174,6 +183,7 @@ function ConfirmationDialog(props) {
           Copy Code and enter room
         </Button>
       </Box>
+
     </Dialog>
   );
 }
