@@ -29,6 +29,7 @@ export const Chat = (props) => {
   const uuid = uuidv4();
   const { state } = useLocation();
   const token = localStorage.getItem('token');
+  console.log(state)
 
   useEffect(() => {
     setUsers(state.connectedUsers);
@@ -56,7 +57,7 @@ export const Chat = (props) => {
     })
     socket.on("b_user_left", (data) => {
       console.log({ data, users })
-      setUsers((prev) => {console.log(prev); return prev.filter(user => user.id !== data.userId)});
+      setUsers((prev) => { console.log(prev); return prev.filter(user => user.id !== data.userId) });
     });
 
     socket.emit("user_joined", { jwt: token, token: uuid, roomId: state.room.id });
